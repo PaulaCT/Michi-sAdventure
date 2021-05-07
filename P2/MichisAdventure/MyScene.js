@@ -7,12 +7,17 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
 
-
+import { ControladorMoneda } from './ControladorMoneda.js'
+import { ControladorObstaculo } from './ControladorObstaculo.js'
  
 /// La clase fachada del modelo
 /**
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
+
+ const carril1 = {i:1, x:30, y:3, z:1, s:1};
+ const carril2 = {i:2, x:30, y:1, z:1.4, s:1.75};
+ const carril3 = {i:3, x:30, y:-0.7, z:1.8, s:2.5};
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -33,18 +38,24 @@ class MyScene extends THREE.Scene {
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
     
-    // Un suelo 
-    //this.suelo = new Suelo();
+    // Sustituiremos esto por el suelo y el fondo
+    this.createGround();
 
+    //this.suelo = new Suelo();
     // Background
     //this.mundo = new Mundo();
     
-    // Y unos ejes. Imprescindibles para orientarnos sobre dónde están las cosas
+    // 
     this.axis = new THREE.AxesHelper (5);
     this.axis.position.set(-5,0,0);
     this.add (this.axis);
-    this.axis.visible = false;
 
+    //this.moneda = new Moneda(carril3);
+    //this.axis.add(this.moneda);
+    this.monedas1 = new ControladorMoneda(carril1);
+    this.axis.add(this.monedas1);
+    this.obstaculos3 = new ControladorObstaculo(carril2, carril3);
+    this.axis.add(this.obstaculos3);
     // this.michi = new Michi();
     // this.axis.add (this.michi);
     
@@ -57,7 +68,7 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (20, 0, 50);
+    this.camera.position.set (0, 0, 50);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
@@ -77,10 +88,10 @@ class MyScene extends THREE.Scene {
     // El suelo es un Mesh, necesita una geometría y un material.
     
     // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (50,0.2,50);
+    var geometryGround = new THREE.BoxGeometry (50,50,0.2);
     
     // El material se hará con una textura de madera
-    var texture = new THREE.TextureLoader().load('../imgs/ajedrez.jpg');
+    var texture = new THREE.TextureLoader().load('./michis-imgs/stars-ini.jpg');
     var materialGround = new THREE.MeshPhongMaterial ({map: texture});
     
     // Ya se puede construir el Mesh
@@ -88,10 +99,34 @@ class MyScene extends THREE.Scene {
     
     // Todas las figuras se crean centradas en el origen.
     // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
-    ground.position.y = -0.1;
+    //ground.position.y = 0;
     
     // Que no se nos olvide añadirlo a la escena, que en este caso es  this
     this.add (ground);
+
+    // Los carriles
+    // ESTO PODRÍA SER UTIL 
+
+    var carril1geom = new THREE.BoxGeometry (50,1,0.2);
+    var carril1mat = new THREE.MeshPhongMaterial({color: 0xFFFFFF});
+    var carril1mesh = new THREE.Mesh (carril1geom, carril1mat);
+    carril1mesh.position.z = 0.3;
+    carril1mesh.position.y = 3;
+    this.add(carril1mesh);
+    
+    var carril2geom = new THREE.BoxGeometry (50,2,0.2);
+    var carril2mat = new THREE.MeshPhongMaterial({color: 0xF29089});
+    var carril2mesh = new THREE.Mesh (carril2geom, carril2mat);
+    carril2mesh.position.z = 0.3;
+    carril2mesh.position.y = 1.5;
+    this.add(carril2mesh);
+
+    var carril3geom = new THREE.BoxGeometry (50,3,0.2);
+    var carril3mat = new THREE.MeshPhongMaterial({color: 0x3F7A63});
+    var carril3mesh = new THREE.Mesh (carril3geom, carril3mat);
+    carril3mesh.position.z = 0.3;
+    carril3mesh.position.y = -1;
+    this.add(carril3mesh);
   }
   
   createGUI () {
@@ -106,15 +141,18 @@ class MyScene extends THREE.Scene {
       this.lightIntensity = 0.5;
       this.axisOnOff = true;
       this.animate = false;
+      this.pause = false;
     }
 
     // Se crea una sección para los controles de esta clase
     var folder = gui.addFolder ('Controles');
+
+    // PAUSA
+    folder.add (this.guiControls, 'pause').name("Pausar ");
     
     // Se le añade un control para la intensidad de la luz
     folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
     
-    folder.add (this.guiControls, 'animate').name ('Animar: ');
 
     return gui;
   }
@@ -187,9 +225,22 @@ class MyScene extends THREE.Scene {
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo, le pasamos el tiempo
-    //this.mundo.update();
-    //this.suelo.update();
-    //this.michi.update();
+
+    // El primer booleano le indica si se debe mover
+    if (!this.guiControls.pause){
+
+      // El segundo booleano indica si son las 3 de la madrugada
+      //this.moneda.update(false, false);
+
+      // El primer parámetro indica si son las 3 am. El segundo indica en qué carril está el gato
+      this.monedas1.update(false, 1);
+      this.obstaculos3.update(false, 1);
+
+      //this.mundo.update();
+      //this.suelo.update();
+      //this.michi.update();
+    }
+    
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
