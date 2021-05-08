@@ -19,6 +19,9 @@ class Moneda extends THREE.Object3D {
     this.pos_y = 0;
     this.arriba = false;
     this.invisible = false;
+
+    // Controlaremos la animación desde aquí
+    //this.annie = this.moneda.get_annie();
   }
 
 
@@ -52,6 +55,9 @@ class Moneda extends THREE.Object3D {
             }
             this.position.y = this.pos_y;
 
+            // Movimiento: girar
+            //this.annie.update();
+
             // Llamamos al update de Objeto.js
             this.position.x = this.moneda.update(am);  
         } 
@@ -67,7 +73,15 @@ class Moneda extends THREE.Object3D {
   }
 
 
-  // ---------- Función set_posicion ----------
+  // ---------- Función get_visible ----------
+  // Devuelve la visibilidad de la moneda
+
+  get_visible(){
+    return this.visible;
+  }
+  
+
+  // ---------- Función set_position ----------
   // Recibe una posición del tipo posición = {x,y,z}
   // Llama a la función set_posicion de Objeto.js
 

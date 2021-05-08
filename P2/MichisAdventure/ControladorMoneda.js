@@ -48,21 +48,23 @@ class ControladorMoneda extends THREE.Object3D {
     // Iremos lanzando monedas cada segundo
     var time = Date.now();
     var segundos = -(this.inicio_movimiento - time) / 1000;
+    var frecuencia = 1;
+    if (am) frecuencia = 2.25;
 
     // Las vamos activando
     if (!this.primera){
       this.moneda1.activate();
       this.primera = true;
       this.inicio_movimiento = time;
-    } else if (!this.segunda && segundos > 1){
+    } else if (!this.segunda && segundos > 1/frecuencia){
       this.moneda2.activate();
       this.segunda = true;
       this.inicio_movimiento = time;
-    } else if (!this.tercera && segundos > 1){
+    } else if (!this.tercera && segundos > 1/frecuencia){
       this.moneda3.activate();
       this.tercera = true;
       this.inicio_movimiento = time;
-    } else if (!this.cuarta && segundos > 1){
+    } else if (!this.cuarta && segundos > 1/frecuencia){
       this.moneda4.activate();
       this.cuarta = true;
       this.inicio_movimiento = time;
@@ -101,18 +103,34 @@ class ControladorMoneda extends THREE.Object3D {
   }
 
 
+  // ---------- Función fin_trayectoria ----------
+  // Devuelve true si todas las monedas están invisibles
+
+  fin_trayectoria(){
+    return !this.moneda1.get_visible() && !this.moneda2.get_visible() 
+      && !this.moneda3.get_visible() && !this.moneda4.get_visible();
+  }
+
+
   // ---------- Función preprar ----------
   // Vuelve a poner a las monedas en su posición inicial y las vuelve visibles
 
   preparar(){
-    this.moneda1.set_posicion(this.pos_ini);
+    this.moneda1.set_position(this.pos_ini);
     this.moneda1.set_visible(true);
-    this.moneda2.set_posicion(this.pos_ini);
+    this.moneda2.set_position(this.pos_ini);
     this.moneda2.set_visible(true);
-    this.moneda3.set_posicion(this.pos_ini);
+    this.moneda3.set_position(this.pos_ini);
     this.moneda3.set_visible(true);
-    this.moneda4.set_posicion(this.pos_ini);
+    this.moneda4.set_position(this.pos_ini);
     this.moneda4.set_visible(true);
+    
+
+    // Volvemos a poner a false los booleanos del inicio del movimiento
+    this.primera = false;
+    this.segunda = false;
+    this.tercera = false;
+    this.cuarta = false;
   }
 }
 

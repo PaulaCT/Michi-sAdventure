@@ -15,9 +15,7 @@ class Obstaculo extends THREE.Object3D {
     // Y lo añadimos como hijo del Object3D (el this)
     this.add(this.obstaculo); 
 
-    // Almacenamos su posición en y (para que bote) y algunos parámetros de control
-    this.pos_y = 0;
-    this.arriba = false;
+    // Almacenamos algunos parámetros de control
     this.invisible = false;
   }
 
@@ -43,7 +41,7 @@ class Obstaculo extends THREE.Object3D {
             // ...
 
             // Llamamos al update de Objeto.js
-            this.position.x = this.obstaculo.update(am);  
+            this.position.x = this.obstaculo.update(am);
         } 
     } 
   }
@@ -57,7 +55,15 @@ class Obstaculo extends THREE.Object3D {
   }
 
 
-  // ---------- Función set_posicion ----------
+  // ---------- Función get_visible ----------
+  // Devuelve la visibilidad del obstáculo
+
+  get_visible(){
+    return this.visible;
+  }
+
+
+  // ---------- Función set_position ----------
   // Recibe una posición del tipo posición = {x,y,z}
   // Llama a la función set_posicion de Objeto.js
 

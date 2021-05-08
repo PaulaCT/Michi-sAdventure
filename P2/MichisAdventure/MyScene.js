@@ -7,17 +7,16 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 
 // Clases de mi proyecto
 
-import { ControladorMoneda } from './ControladorMoneda.js'
-import { ControladorObstaculo } from './ControladorObstaculo.js'
+import { ControladorObj } from './ControladorObj.js'
  
 /// La clase fachada del modelo
 /**
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
- const carril1 = {i:1, x:30, y:3, z:1, s:1};
- const carril2 = {i:2, x:30, y:1, z:1.4, s:1.75};
- const carril3 = {i:3, x:30, y:-0.7, z:1.8, s:2.5};
+ const carril1 = {x:30, y:3, z:1, s:1, i:1};
+ const carril2 = {x:30, y:1.2, z:1.4, s:1.75, i:2};
+ const carril3 = {x:30, y:-0.7, z:1.8, s:2.5, i:3};
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -52,10 +51,9 @@ class MyScene extends THREE.Scene {
 
     //this.moneda = new Moneda(carril3);
     //this.axis.add(this.moneda);
-    this.monedas1 = new ControladorMoneda(carril1);
-    this.axis.add(this.monedas1);
-    this.obstaculos3 = new ControladorObstaculo(carril2, carril3);
-    this.axis.add(this.obstaculos3);
+    this.control = new ControladorObj(carril1, carril2, carril3);
+    this.axis.add(this.control);
+
     // this.michi = new Michi();
     // this.axis.add (this.michi);
     
@@ -233,8 +231,7 @@ class MyScene extends THREE.Scene {
       //this.moneda.update(false, false);
 
       // El primer parámetro indica si son las 3 am. El segundo indica en qué carril está el gato
-      this.monedas1.update(false, 1);
-      this.obstaculos3.update(false, 1);
+      this.control.update(false, 1);
 
       //this.mundo.update();
       //this.suelo.update();
