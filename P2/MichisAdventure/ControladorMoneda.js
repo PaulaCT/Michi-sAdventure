@@ -4,7 +4,7 @@ import { Moneda } from './Moneda.js'
 
 // Constantes
 const POS_GATO = 0;
-const FINAL_CAMINO = -50;
+const FINAL_CAMINO = -25;
 
 class ControladorMoneda extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -37,13 +37,14 @@ class ControladorMoneda extends THREE.Object3D {
     this.inicio_movimiento = Date.now();
 
     // PREGUNTA: ¿Dónde irían el contador de monedas y las vidas?
+    this.recogidas = 0;
   }
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indique si son las 3 am y el carril en el que está el gato
+  // Recibe un booleano que indique si son las 3 am y el gato
 
-  update(am, carril_gato){  
+  update(am, gato){  
 
     // Iremos lanzando monedas cada segundo
     var time = Date.now();
@@ -72,22 +73,29 @@ class ControladorMoneda extends THREE.Object3D {
 
     // Aquí deberíamos añadir algún tipo de método para cuando una 
     // moneda sea recogida
-    // ...
-    /*if (carril_gato == this.i_carril){
-      // Si la moneda colisiona con el gato
-      // Obviamiente no funciona, así no van las colisiones
-      if (this.moneda1.get_pos_x() == POS_GATO) this.moneda1.set_visible(false);
-      } else if (this.moneda1.get_pos_x() > POS_GATO){
-        if (this.moneda2.get_pos_x() == POS_GATO){
-          this.moneda2.set_visible(false);
-        } else if (this.moneda2.get_pos_x() > POS_GATO){
-          if (this.moneda3.get_pos_x() == POS_GATO){
-            this.moneda3.set_visible(false);
-          } else if (this.moneda3.get_pos_x() > POS_GATO){
-            if (this.moneda4.get_pos_x() == POS_GATO) this.moneda4.set_visible(false);
-          }
+    // Se comprueba la primera moneda que aún no haya llegado al gato
+    // Si se ha producido colisión, ocultamos la moneda y la contamos
+    if (this.moneda1.get_visible() && this.moneda1.get_pos_x() >=  POS_GATO) {
+      if (this.moneda1.colision(gato)) {
+        this.moneda1.set_visible(false);
+        this.recogidas++;
       }
-    }*/
+    } else if (this.moneda2.get_visible() && this.moneda2.get_pos_x() >= POS_GATO) {
+      if (this.moneda2.colision(gato)) {
+        this.moneda2.set_visible(false);
+        this.recogidas++;
+      }
+    } else if (this.moneda3.get_visible() && this.moneda3.get_pos_x() >= POS_GATO) {
+      if (this.moneda3.colision(gato)) {
+        this.moneda3.set_visible(false);
+        this.recogidas++;
+      }
+    } else if (this.moneda4.get_visible() && this.moneda4.get_pos_x() >= POS_GATO) {
+      if (this.moneda4.colision(gato)) {
+        this.moneda4.set_visible(false);
+        this.recogidas++;
+      }      
+    }
 
     // Ahora llamamos a sus respectivos métodos update
     this.moneda1.update(this.primera, am);
@@ -131,6 +139,18 @@ class ControladorMoneda extends THREE.Object3D {
     this.segunda = false;
     this.tercera = false;
     this.cuarta = false;
+  }
+
+  
+  // ---------- Función get_recogidas ----------
+  // Devuelve el total de monedas recogidas
+
+  get_recogidas(){
+    var aux = this.recogidas;
+
+    // Reiniciamos el contador de monedas
+    this.recogidas = 0;
+    return aux;
   }
 }
 

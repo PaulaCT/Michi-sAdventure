@@ -59,9 +59,17 @@ class Moneda extends THREE.Object3D {
             //this.annie.update();
 
             // Llamamos al update de Objeto.js
-            this.position.x = this.moneda.update(am);  
+            this.moneda.update(am);  
         } 
     } 
+  }
+
+
+  // ---------- Función colision ----------
+  // Devuelve true si la moneda ha colisionado con el gato
+
+  colision(gato){
+    return this.moneda.colision(gato);
   }
 
 

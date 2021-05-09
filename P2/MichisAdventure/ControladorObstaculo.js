@@ -4,7 +4,7 @@ import { Obstaculo } from './Obstaculo.js'
 
 // Constantes
 const POS_GATO = 0;
-const FINAL_CAMINO = -50;
+const FINAL_CAMINO = -25;
 
 class ControladorObstaculo extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -25,7 +25,11 @@ class ControladorObstaculo extends THREE.Object3D {
     this.tercera = false;
     this.cuarta = false;
 
+    // Param para el movimiento
     this.inicio_movimiento = Date.now();
+
+    // Número de colisiones (se restarán a la vida del gato)
+    this.colisiones = 0;
   }
 
 
@@ -71,9 +75,9 @@ class ControladorObstaculo extends THREE.Object3D {
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indique si son las 3 am y el carril en el que está el gato
+  // Recibe un booleano que indique si son las 3 am y el gato
 
-  update(am, carril_gato){  
+  update(am, gato){  
 
     // Iremos lanzando obstáculos cada segundo
     var time = Date.now();
@@ -117,7 +121,29 @@ class ControladorObstaculo extends THREE.Object3D {
     }
 
     // Aquí se gestiona la colisión
-    // ...
+    // Se comprueba el primer obstáculo que aún no haya llegado al gato
+    // Si se ha producido colisión, ocultamos el obstáculo y lo contamos
+    if (this.obstaculo1.get_visible() && this.obstaculo1.get_pos_x() >=  POS_GATO) {
+      if (this.obstaculo1.colision(gato)) {
+        this.obstaculo1.set_visible(false);
+        this.colisiones++;
+      }
+    } else if (this.obstaculo2.get_visible() && this.obstaculo2.get_pos_x() >= POS_GATO) {
+      if (this.obstaculo2.colision(gato)) {
+        this.obstaculo2.set_visible(false);
+        this.colisiones++;
+      }
+    } else if (this.obstaculo3.get_visible() && this.obstaculo3.get_pos_x() >= POS_GATO) {
+      if (this.obstaculo3.colision(gato)) {
+        this.obstaculo3.set_visible(false);
+        this.colisiones++;
+      }
+    } else if (this.patron % 2 == 0 && this.obstaculo4.get_visible() && this.obstaculo4.get_pos_x() >= POS_GATO) {
+      if (this.obstaculo4.colision(gato)) {
+        this.obstaculo4.set_visible(false);
+        this.colisiones++;
+      }
+    }
 
     // Ahora llamamos a sus respectivos métodos update
     this.obstaculo1.update(this.primera, am);
@@ -129,7 +155,7 @@ class ControladorObstaculo extends THREE.Object3D {
     // Utilizamos el booleano del cuarto objeto para el tercero
     } else this.obstaculo3.update(this.cuarta, am);
 
-    // Detenemos a las monedas que han llegado al final del camino
+    // Detenemos a los obstaculos que han llegado al final del camino
     if (this.obstaculo1.get_pos_x() <= FINAL_CAMINO) this.obstaculo1.set_visible(false);
     if (this.obstaculo2.get_pos_x() <= FINAL_CAMINO) this.obstaculo2.set_visible(false);
     if (this.obstaculo3.get_pos_x() <= FINAL_CAMINO) this.obstaculo3.set_visible(false);
@@ -148,7 +174,7 @@ class ControladorObstaculo extends THREE.Object3D {
 
 
   // ---------- Función preprar ----------
-  // Vuelve a poner a las monedas en su posición inicial y las vuelve visibles
+  // Vuelve a poner los obstaculos en su posición inicial y las vuelve visibles
 
   preparar(){
     this.obstaculo1.set_position(this.pos_ini[0]);
@@ -167,6 +193,18 @@ class ControladorObstaculo extends THREE.Object3D {
     this.segunda = false;
     this.tercera = false;
     this.cuarta = false;
+  }
+
+  
+  // ---------- Función get_colisiones ----------
+  // Devuelve el total de colisiones
+
+  get_colisiones(){
+    var aux = this.colisiones;
+
+    // Reiniciamos las colisiones
+    this.colisiones = 0;
+    return aux;
   }
 }
 

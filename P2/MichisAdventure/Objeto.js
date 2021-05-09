@@ -33,15 +33,18 @@ class Objeto extends THREE.Object3D {
     this.add (this.objeto);
 
     // Situamos al objeto en su posición
-    this.rotation.x = Math.PI/2;
-    this.position.x = carril.x;
-    this.position.y = carril.y;
-    this.position.z = carril.z;
-    this.scale.set(carril.s,carril.s,carril.s);
+    this.objeto.rotation.x = Math.PI/2;
+    this.objeto.position.x = carril.x;
+    this.objeto.position.y = carril.y;
+    this.objeto.position.z = carril.z;
+    this.objeto.scale.set(carril.s,carril.s,carril.s);
 
     // Almacenamos su posición en x
-    this.pos_x = 0;
+    this.pos_x = carril.x;
     this.inicio = carril;
+
+    // Para la colisión
+    this.objeto.geometry.computeBoundingBox();
   }
 
 
@@ -58,7 +61,7 @@ class Objeto extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe un booleano que indica si son las 3am
   // Forma de llamar al update desde la clase que lo "hereda":
-  // this.position.x = this.????.update(am);
+  // this.position.x = this.????.update(am); O NO
   // Controla el movimiento de girar ??? y el desplazamiento por el carril
   
   update (am) { 
@@ -67,10 +70,28 @@ class Objeto extends THREE.Object3D {
     var segundos = -(this.last_time - time) / 1000;
     if (am) this.pos_x = this.pos_x - segundos * VELOCIDAD_3AM;
     else this.pos_x = this.pos_x - segundos * VELOCIDAD;
+    this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
     this.last_time = time;
 
-    // Devolvemos la posición para que la clase heredera lo actualice
-    return this.pos_x;
+    // Devolvemos la posición para que la clase heredera lo actualice O NOOO
+    //this.objeto.position.x = this.pos_x;
+  }
+
+
+  // ---------- Función colision ----------
+  // Devuelve true si el objeto ha colisionado con el gato
+
+  colision(gato){
+    this.objeto.updateMatrixWorld();
+    gato.updateMatrixWorld();
+    
+    var obj_bound = new THREE.Box3();
+    var cat_bound = new THREE.Box3();
+
+    obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
+    cat_bound.copy(gato.geometry.boundingBox).applyMatrix4(gato.matrixWorld)
+
+    return obj_bound.intersectsBox(cat_bound);
   }
 
 
@@ -94,8 +115,8 @@ class Objeto extends THREE.Object3D {
   // Recibe una posición del tipo posición = {x,y,z} y se coloca en ella
   
   set_position(posicion){
-    this.position.set(posicion.x, posicion.y, posicion.z);
-    this.pos_x = this.inicio.x - posicion.x;
+    this.objeto.position.set(posicion.x, posicion.y, posicion.z);
+    this.pos_x = posicion.x;
   }
 }
 

@@ -14,9 +14,9 @@ import { ControladorObj } from './ControladorObj.js'
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
- const carril1 = {x:30, y:3, z:1, s:1, i:1};
- const carril2 = {x:30, y:1.2, z:1.4, s:1.75, i:2};
- const carril3 = {x:30, y:-0.7, z:1.8, s:2.5, i:3};
+ const carril1 = {x:25, y:3, z:1, s:1, i:1};
+ const carril2 = {x:25, y:1.2, z:1.4, s:1.75, i:2};
+ const carril3 = {x:25, y:-0.7, z:1.8, s:2.5, i:3};
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -52,7 +52,16 @@ class MyScene extends THREE.Scene {
     //this.moneda = new Moneda(carril3);
     //this.axis.add(this.moneda);
     this.control = new ControladorObj(carril1, carril2, carril3);
-    this.axis.add(this.control);
+    this.add(this.control);
+
+    // Aquí irá el michi cuando se cree supongo
+    var gato_geom = new THREE.BoxGeometry(1,1);
+    var gato_mat = new THREE.MeshPhongMaterial({color: 0x7BA6EF});
+    this.gato = new THREE.Mesh (gato_geom, gato_mat);
+    this.gato.position.set(0, carril1.y, carril1.z);
+    this.gato.scale.set(carril1.s,carril1.s,carril1.s);
+    this.gato.geometry.computeBoundingBox();
+    this.add(this.gato);
 
     // this.michi = new Michi();
     // this.axis.add (this.michi);
@@ -230,8 +239,8 @@ class MyScene extends THREE.Scene {
       // El segundo booleano indica si son las 3 de la madrugada
       //this.moneda.update(false, false);
 
-      // El primer parámetro indica si son las 3 am. El segundo indica en qué carril está el gato
-      this.control.update(false, 1);
+      // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
+      this.control.update(false, this.gato);
 
       //this.mundo.update();
       //this.suelo.update();

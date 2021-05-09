@@ -67,6 +67,11 @@ class ControladorObj extends THREE.Object3D {
     this.moneda_lista = [true, true, true, true, true, true];
     this.obstaculo_listo = [true, true, true, true, true, true];
 
+    for (var i=0; i<6; i++) {
+      this.monedas[i].preparar();
+      this.obstaculos[i].preparar();
+    }
+
     // Cada 4 segundos elegimos aleatoriamente qué objetos aparecerán 
     this.inicio_movimiento = Date.now();
 
@@ -75,8 +80,8 @@ class ControladorObj extends THREE.Object3D {
     // Crear un método que devuelva las colisiones y se resten a la vida en controladorObstaculo
     // Crear un método que devuelva las monedas recogidas y se sumen en controladorMoneda
     // Crear un método para exportar estos datos a la interfaz gráfica
-    // this.vidas = 7;
-    // this.dinero = 0;
+    this.vidas = 7;
+    this.dinero = 0;
   }
 
 
@@ -88,13 +93,10 @@ class ControladorObj extends THREE.Object3D {
     var lanzar_obstaculo = false;
 
     // Primero vemos si lanzar monedas
+    if (this.get_random(0,5) != 0) lanzar_moneda = true;
 
-
-    // CAMBIAR AHORA, PONER PROBABILIDAD DE QUE NO
-    if (this.get_random(0,3) != 3) lanzar_moneda = true;
-
-    // Y ahora vemos si lanzar obstáculos
-    if (this.get_random(0,3) != 3) lanzar_obstaculo = true;
+    // Y ahora vemos si lanzar obstáculos (menos posibilidad, podría variar con nivel)
+    if (this.get_random(0,4) != 0) lanzar_obstaculo = true;
 
     if (lanzar_moneda) {
       // Elegimos el carril para las monedas
@@ -165,9 +167,14 @@ class ControladorObj extends THREE.Object3D {
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indique si son las 3 am y el carril en el que está el gato
+  // Recibe un booleano que indique si son las 3 am y al gato
 
-  update(am, carril_gato){  
+  update(am, gato){  
+
+    if (this.vidas == 0) {
+      window.alert("Game over");
+      this.vidas = 7;
+    }
 
     // Cada 4 segundos (o menos si am) actualizamos la lista, seleccionamos los siguientes elementos
     // y los lanzamos
@@ -178,14 +185,23 @@ class ControladorObj extends THREE.Object3D {
 
     if (segundos > 4 / frecuencia){
       this.actualizar_lista();
+      console.log("Dinero: " + this.dinero);
+      console.log("Vidas: " + this.vidas);
       this.aleatoria();
       this.inicio_movimiento = time;
     }
 
-    // Llamamos al update de todos los controladores que hayan sido lanzados
+    // Llamamos al update de todos los controladores que hayan sido lanzados 
+    // y hacemos recuento de las colisiones
     for (var i=0; i<6; i++){
-      if (!this.moneda_lista[i]) this.monedas[i].update(am,carril_gato);
-      if (!this.obstaculo_listo[i]) this.obstaculos[i].update(am,carril_gato);
+      if (!this.moneda_lista[i]) {
+        this.dinero = this.dinero + this.monedas[i].get_recogidas();
+        this.monedas[i].update(am,gato);
+      } 
+      if (!this.obstaculo_listo[i]) {
+        this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
+        this.obstaculos[i].update(am,gato);
+      } 
     }
   }
 

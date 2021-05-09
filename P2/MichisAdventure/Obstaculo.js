@@ -41,9 +41,17 @@ class Obstaculo extends THREE.Object3D {
             // ...
 
             // Llamamos al update de Objeto.js
-            this.position.x = this.obstaculo.update(am);
+            this.obstaculo.update(am);
         } 
     } 
+  }
+
+
+  // ---------- Función colision ----------
+  // Devuelve true si el obstáculo ha colisionado con el gato
+
+  colision(gato){
+    return this.obstaculo.colision(gato);
   }
 
 
