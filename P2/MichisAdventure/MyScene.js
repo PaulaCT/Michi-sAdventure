@@ -15,9 +15,9 @@ import { Fondo } from './Fondo.js'
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
- const carril1 = {x:25, y:3, z:1, s:1, i:1};
- const carril2 = {x:25, y:1.35, z:1.4, s:1.75, i:1.8};
- const carril3 = {x:25, y:-0.9, z:1.8, s:2.5, i:2.9};
+ const carril1 = {x:25, y:3, z:0.6, s:1, i:1};
+ const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
+ const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
  //const video = document.getElementById('video');
 
  const SEG_HORA = 3;
@@ -85,7 +85,7 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     // También se indica dónde se coloca
-    this.camera.position.set (0, 0, 50);
+    this.camera.position.set (0, 0, 80);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
@@ -261,8 +261,8 @@ class MyScene extends THREE.Scene {
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
-      // El fondo variará en función de la hora
-      this.fondo.update(segundos)
+      // El fondo variará en función de la hora (no lo necesita de momento)
+      this.fondo.update()
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato);
