@@ -45,7 +45,7 @@ class Moneda extends THREE.Object3D {
             // Movimiento: botar
 
             if (this.arriba){
-                if (this.pos_y > -0.15){
+                if (this.pos_y > -0.1){
                     this.pos_y = this.pos_y - 0.025;
                 } else this.arriba = false;
             } else {

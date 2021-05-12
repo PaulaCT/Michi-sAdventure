@@ -8,15 +8,19 @@ import { TrackballControls } from '../libs/TrackballControls.js'
 // Clases de mi proyecto
 
 import { ControladorObj } from './ControladorObj.js'
- 
+import { Fondo } from './Fondo.js'
+
 /// La clase fachada del modelo
 /**
  * Usaremos una clase derivada de la clase Scene de Three.js para llevar el control de la escena y de todo lo que ocurre en ella.
  */
 
  const carril1 = {x:25, y:3, z:1, s:1, i:1};
- const carril2 = {x:25, y:1.2, z:1.4, s:1.75, i:2};
- const carril3 = {x:25, y:-0.7, z:1.8, s:2.5, i:3};
+ const carril2 = {x:25, y:1.35, z:1.4, s:1.75, i:1.8};
+ const carril3 = {x:25, y:-0.9, z:1.8, s:2.5, i:2.9};
+ //const video = document.getElementById('video');
+
+ const SEG_HORA = 3;
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -63,8 +67,14 @@ class MyScene extends THREE.Scene {
     this.gato.geometry.computeBoundingBox();
     this.add(this.gato);
 
+    this.fondo = new Fondo();
+    this.add(this.fondo);
+
     // this.michi = new Michi();
     // this.axis.add (this.michi);
+
+    this.last_time = Date.now();
+    this.am = false;
     
   }
   
@@ -92,48 +102,9 @@ class MyScene extends THREE.Scene {
   }
   
   createGround () {
-    // El suelo es un Mesh, necesita una geometría y un material.
-    
-    // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (50,50,0.2);
-    
-    // El material se hará con una textura de madera
-    var texture = new THREE.TextureLoader().load('./michis-imgs/stars-ini.jpg');
-    var materialGround = new THREE.MeshPhongMaterial ({map: texture});
-    
-    // Ya se puede construir el Mesh
-    var ground = new THREE.Mesh (geometryGround, materialGround);
-    
-    // Todas las figuras se crean centradas en el origen.
-    // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
-    //ground.position.y = 0;
-    
-    // Que no se nos olvide añadirlo a la escena, que en este caso es  this
-    this.add (ground);
+    this.fondo = new Fondo();
+    this.add(this.fondo);
 
-    // Los carriles
-    // ESTO PODRÍA SER UTIL 
-
-    var carril1geom = new THREE.BoxGeometry (50,1,0.2);
-    var carril1mat = new THREE.MeshPhongMaterial({color: 0xFFFFFF});
-    var carril1mesh = new THREE.Mesh (carril1geom, carril1mat);
-    carril1mesh.position.z = 0.3;
-    carril1mesh.position.y = 3;
-    this.add(carril1mesh);
-    
-    var carril2geom = new THREE.BoxGeometry (50,2,0.2);
-    var carril2mat = new THREE.MeshPhongMaterial({color: 0xF29089});
-    var carril2mesh = new THREE.Mesh (carril2geom, carril2mat);
-    carril2mesh.position.z = 0.3;
-    carril2mesh.position.y = 1.5;
-    this.add(carril2mesh);
-
-    var carril3geom = new THREE.BoxGeometry (50,3,0.2);
-    var carril3mat = new THREE.MeshPhongMaterial({color: 0x3F7A63});
-    var carril3mesh = new THREE.Mesh (carril3geom, carril3mat);
-    carril3mesh.position.z = 0.3;
-    carril3mesh.position.y = -1;
-    this.add(carril3mesh);
   }
   
   createGUI () {
@@ -223,6 +194,50 @@ class MyScene extends THREE.Scene {
     this.renderer.setSize (window.innerWidth, window.innerHeight);
   }
 
+  onKeyDown (event) {
+    var keyCode = event.which;
+    switch(keyCode) {
+        // Up
+        case 38: this.gato_mov(0); break;
+        // Down
+        case 40: this.gato_mov(1); break;
+        //Space
+        case 32: console.log("Habilidad"); break;
+        default: break;
+    }
+  }
+
+  // Si añadimos al caracal habría que contar esto
+  /*onKeyUp (event) {
+    switch(x) {
+        // Up
+        case 87: ; break;
+        // Down
+        case 83: ; break;
+    }
+  }*/
+
+  gato_mov(opcion) {
+    if (opcion == 0) {
+        // Añadir atributo carril al gato
+        if (this.gato.position.y == carril2.y) {
+            this.gato.position.set(0, carril1.y, carril1.z);
+            this.gato.scale.set(carril1.s, carril1.s, carril1.s);
+        } else if (this.gato.position.y == carril3.y) {
+            this.gato.position.set(0, carril2.y, carril2.z);
+            this.gato.scale.set(carril2.s, carril2.s, carril2.s);
+        }
+    } else {
+        if (this.gato.position.y == carril1.y) {
+            this.gato.position.set(0, carril2.y, carril2.z);
+            this.gato.scale.set(carril2.s, carril2.s, carril2.s);
+        } else if (this.gato.position.y == carril2.y) {
+            this.gato.position.set(0, carril3.y, carril3.z);
+            this.gato.scale.set(carril3.s, carril3.s, carril3.s);
+        }
+    }
+  }
+
   update () {
     // Se actualizan los elementos de la escena para cada frame
     // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
@@ -232,15 +247,25 @@ class MyScene extends THREE.Scene {
     this.cameraControl.update();
     
     // Se actualiza el resto del modelo, le pasamos el tiempo
+    var time = Date.now();
+    var segundos = -(this.last_time - time) / 1000;
+    if (segundos >= SEG_HORA * 10) {
+        console.log("3 am");
+        this.am = true;
+        this.last_time = time;
+    } else if (this.am && segundos >= SEG_HORA * 2) {
+        this.am = false;
+        this.last_time = time;
+    }
 
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
-      // El segundo booleano indica si son las 3 de la madrugada
-      //this.moneda.update(false, false);
+      // El fondo variará en función de la hora
+      this.fondo.update(segundos)
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
-      this.control.update(false, this.gato);
+      this.control.update(this.am, this.gato);
 
       //this.mundo.update();
       //this.suelo.update();
@@ -258,6 +283,10 @@ class MyScene extends THREE.Scene {
   }
 }
 
+
+
+
+
 /// La función   main
 $(function () {
   
@@ -266,6 +295,8 @@ $(function () {
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
+  window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
+  //window.addEventListener("keyup" (event) => scene.onKeyUp(event), true);
   
   // Que no se nos olvide, la primera visualización.
   scene.update();

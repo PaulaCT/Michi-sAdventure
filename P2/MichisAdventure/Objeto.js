@@ -83,12 +83,16 @@ class Objeto extends THREE.Object3D {
 
   colision(gato){
     this.objeto.updateMatrixWorld();
+    //if (gato.habilidadLanzada()) gato.habilidad.updateMatrixWorld();
+    //else
     gato.updateMatrixWorld();
     
     var obj_bound = new THREE.Box3();
     var cat_bound = new THREE.Box3();
 
     obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
+    //if (gato.habilidadLanzada()) cat_bound.copy(gato.habilidad.geometry.boundingBox).applyMatrix4(gato.habilidad.matrixWorld);
+    //else
     cat_bound.copy(gato.geometry.boundingBox).applyMatrix4(gato.matrixWorld)
 
     return obj_bound.intersectsBox(cat_bound);

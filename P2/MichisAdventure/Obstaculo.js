@@ -38,10 +38,11 @@ class Obstaculo extends THREE.Object3D {
     if (!this.invisible){
         if (mover) {
             // Aquí implementaríamos cosas para que explotara al colisionar
-            // ...
-
+            // if (explotar) { animación + this.contador_explosion++ }
+            // else
             // Llamamos al update de Objeto.js
             this.obstaculo.update(am);
+            // if (this.contador_explosion == 6) this.explotar = false;
         } 
     } 
   }
@@ -49,9 +50,16 @@ class Obstaculo extends THREE.Object3D {
 
   // ---------- Función colision ----------
   // Devuelve true si el obstáculo ha colisionado con el gato
+  // Si ha colisionado llama al gato para que realice la animación y 
+  // la realiza el obstáculo también
 
   colision(gato){
-    return this.obstaculo.colision(gato);
+    if (this.obstaculo.colision(gato)) {
+      //gato.hurt();
+      //this.explotar = true; this.contador_explosión = 0;
+      return true;
+    }
+    return false;
   }
 
 
