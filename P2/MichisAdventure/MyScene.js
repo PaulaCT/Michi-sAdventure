@@ -4,11 +4,13 @@
 import * as THREE from '../libs/three.module.js'
 import { GUI } from '../libs/dat.gui.module.js'
 import { TrackballControls } from '../libs/TrackballControls.js'
+import * as TWEEN from '../libs/tween.esm.js'
 
 // Clases de mi proyecto
 
 import { ControladorObj } from './ControladorObj.js'
 import { Fondo } from './Fondo.js'
+import { Gato } from './Gato.js'
 
 /// La clase fachada del modelo
 /**
@@ -18,7 +20,11 @@ import { Fondo } from './Fondo.js'
  const carril1 = {x:25, y:3, z:0.6, s:1, i:1};
  const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
  const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
- //const video = document.getElementById('video');
+
+ // Para el movimiento del michi. Si se asignaban con las constantes se pasaba por referencia y las constantes cambiaban solas junto con las variables
+  var c1 = {x:25, y:3, z:0.6, s:1, i:1};
+  var c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
+  var c3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
 
  const SEG_HORA = 3;
 
@@ -59,14 +65,49 @@ class MyScene extends THREE.Scene {
     this.add(this.control);
 
     // Aquí irá el michi cuando se cree supongo
-    var gato_geom = new THREE.BoxGeometry(1,1);
-    var gato_mat = new THREE.MeshPhongMaterial({color: 0x7BA6EF});
-    this.gato = new THREE.Mesh (gato_geom, gato_mat);
-    this.gato.position.set(0, carril1.y, carril1.z);
-    this.gato.scale.set(carril1.s,carril1.s,carril1.s);
-    this.gato.geometry.computeBoundingBox();
+
+    this.gato = new Gato();
+    this.gato.position.set(0, c2.y, c2.z);
+    this.gato.scale.set(c2.s,c2.s,c2.s);
     this.add(this.gato);
 
+
+    // Animaciones Tween de movimiento del michi
+    this.mov12 = new TWEEN.Tween(c1).to(c2, 500);
+    this.mov21 = new TWEEN.Tween(c2).to(c1, 500);
+    this.mov23 = new TWEEN.Tween(c2).to(c3, 500);
+    this.mov32 = new TWEEN.Tween(c3).to(c2, 500);
+    var that = this;
+    this.mov12.onUpdate(function(){
+      that.gato.position.set(0, c1.y, c1.z);
+      that.gato.scale.set(c1.s, c1.s, c1.s);
+    });
+    this.mov12.onComplete(function(){
+      c1 = {x:25, y:3, z:0.6, s:1, i:1};
+    });
+    this.mov21.onUpdate(function(){
+      that.gato.position.set(0, c2.y, c2.z);
+      that.gato.scale.set(c2.s, c2.s, c2.s);
+    });
+    this.mov21.onComplete(function(){
+      c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
+
+    });
+    this.mov23.onUpdate(function(){
+      that.gato.position.set(0, c2.y, c2.z);
+      that.gato.scale.set(c2.s, c2.s, c2.s);
+    });
+    this.mov23.onComplete(function(){
+      c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
+    });
+    this.mov32.onUpdate(function(){
+      that.gato.position.set(0, c3.y, c3.z);
+      that.gato.scale.set(c3.s, c3.s, c3.s);
+    });
+    this.mov32.onComplete(function(){
+      c3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
+    });
+    
     this.fondo = new Fondo();
     this.add(this.fondo);
 
@@ -83,9 +124,10 @@ class MyScene extends THREE.Scene {
     //   El ángulo del campo de visión en grados sexagesimales
     //   La razón de aspecto ancho/alto
     //   Los planos de recorte cercano y lejano
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    //this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.OrthographicCamera( window.innerWidth / - 30, window.innerWidth / 30, window.innerHeight / 30, window.innerHeight / - 30, 1, 1000 );
     // También se indica dónde se coloca
-    this.camera.position.set (0, 0, 80);
+    this.camera.position.set (0, 0, 10);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
@@ -198,9 +240,9 @@ class MyScene extends THREE.Scene {
     var keyCode = event.which;
     switch(keyCode) {
         // Up
-        case 38: this.gato_mov(0); break;
+        case 38: this.moverGato('up'); break;
         // Down
-        case 40: this.gato_mov(1); break;
+        case 40: this.moverGato('down'); break;
         //Space
         case 32: console.log("Habilidad"); break;
         default: break;
@@ -217,24 +259,26 @@ class MyScene extends THREE.Scene {
     }
   }*/
 
-  gato_mov(opcion) {
-    if (opcion == 0) {
-        // Añadir atributo carril al gato
-        if (this.gato.position.y == carril2.y) {
-            this.gato.position.set(0, carril1.y, carril1.z);
-            this.gato.scale.set(carril1.s, carril1.s, carril1.s);
-        } else if (this.gato.position.y == carril3.y) {
-            this.gato.position.set(0, carril2.y, carril2.z);
-            this.gato.scale.set(carril2.s, carril2.s, carril2.s);
-        }
-    } else {
-        if (this.gato.position.y == carril1.y) {
-            this.gato.position.set(0, carril2.y, carril2.z);
-            this.gato.scale.set(carril2.s, carril2.s, carril2.s);
-        } else if (this.gato.position.y == carril2.y) {
-            this.gato.position.set(0, carril3.y, carril3.z);
-            this.gato.scale.set(carril3.s, carril3.s, carril3.s);
-        }
+  moverGato(opcion){
+    if(opcion == 'up'){
+      if (this.gato.position.y == carril2.y){
+        this.mov21.start();
+        console.log("2 a 1");
+      }
+      else if (this.gato.position.y == carril3.y){
+        this.mov32.start();
+        console.log("3 a 2");
+      }
+    }
+    if(opcion == 'down') {
+      if (this.gato.position.y == carril1.y){
+        this.mov12.start();
+        console.log("1 a 2");
+      }
+      else if (this.gato.position.y == carril2.y){
+        this.mov23.start();
+        console.log("2 a 3");
+      }
     }
   }
 
@@ -258,12 +302,15 @@ class MyScene extends THREE.Scene {
         this.last_time = time;
     }
 
+    this.gato.update('run');
+
+    TWEEN.update();
+
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
       // El fondo variará en función de la hora (no lo necesita de momento)
       this.fondo.update()
-
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato);
 
