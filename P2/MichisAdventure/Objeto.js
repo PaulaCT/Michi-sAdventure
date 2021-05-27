@@ -1,8 +1,8 @@
 // Dependencias
 import * as THREE from '../libs/three.module.js'
 import { TextureAnimator } from './michis-lib.js'
-
 var clock = new THREE.Clock();
+import { Gato } from './Gato.js'
 
 // Constantes
 const VELOCIDAD = 4;
@@ -25,7 +25,6 @@ class Objeto extends THREE.Object3D {
 
     texture.magFilter = THREE.NearestFilter;
     this.annie = new TextureAnimator(texture, columnas, filas, filas*columnas, 150);
-
 
     // Con TextureAnimator podemos crear una animación tradicional
     /*if (imagen == './michis-imgs/coin_extended.png')
@@ -99,7 +98,7 @@ class Objeto extends THREE.Object3D {
     obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
     //if (gato.habilidadLanzada()) cat_bound.copy(gato.habilidad.geometry.boundingBox).applyMatrix4(gato.habilidad.matrixWorld);
     //else
-    cat_bound.copy(gato.geometry.boundingBox).applyMatrix4(gato.matrixWorld)
+    cat_bound.copy(gato.getBoundingBox()).applyMatrix4(gato.matrixWorld)
 
     return obj_bound.intersectsBox(cat_bound);
   }
