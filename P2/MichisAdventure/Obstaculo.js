@@ -10,7 +10,7 @@ class Obstaculo extends THREE.Object3D {
     super();
 
     // "Hereda" de Object.js
-    this.obstaculo = new Objeto('./michis-imgs/cerberus.png', carril);
+    this.obstaculo = new Objeto('./michis-imgs/cerberus.png', carril, 1, 1);
 
     // Y lo añadimos como hijo del Object3D (el this)
     this.add(this.obstaculo); 
