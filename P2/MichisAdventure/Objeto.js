@@ -1,6 +1,8 @@
 // Dependencias
 import * as THREE from '../libs/three.module.js'
-import { TextureAnimator } from './TextureAnimator.js'
+import { TextureAnimator } from './michis-lib.js'
+
+var clock = new THREE.Clock();
 
 // Constantes
 const VELOCIDAD = 4;
@@ -8,9 +10,10 @@ const VELOCIDAD_3AM = 9;
 
 class Objeto extends THREE.Object3D {
   // ---------- Constructor ----------
-  // Recibe la imagen que tendrá y el carril en el que aparecerá
+  // Recibe la imagen que tendrá, el carril en el que aparecerá y las filas y columnas
+  // de la animación (frames)
   
-  constructor(imagen, carril) {
+  constructor(imagen, carril, filas, columnas) {
     super();
     
     // Clase de la que heredarán las clases obstáculo, moneda y power-up.
@@ -20,13 +23,17 @@ class Objeto extends THREE.Object3D {
     var objetoGeom = new THREE.BoxGeometry(1,0.2);
     var texture = new THREE.TextureLoader().load(imagen);
 
+    texture.magFilter = THREE.NearestFilter;
+    this.annie = new TextureAnimator(texture, columnas, filas, filas*columnas, 150);
+
+
     // Con TextureAnimator podemos crear una animación tradicional
     /*if (imagen == './michis-imgs/coin_extended.png')
       this.annie = new TextureAnimator(texture,1,6,6,170);
     else this.annie = new TextureAnimator(texture,1,1,1,1000);*/
 
-    var objetoMat = new THREE.MeshPhongMaterial ({map: texture,transparent: true,});
-    
+    var objetoMat = new THREE.MeshPhongMaterial ({map: texture, side:THREE.DoubleSide, transparent: true,});
+
     this.objeto = new THREE.Mesh (objetoGeom, objetoMat);
 
     // Y lo añadimos como hijo del Object3D (el this)
@@ -60,9 +67,7 @@ class Objeto extends THREE.Object3D {
 
   // ---------- Función update ----------
   // Recibe un booleano que indica si son las 3am
-  // Forma de llamar al update desde la clase que lo "hereda":
-  // this.position.x = this.????.update(am); O NO
-  // Controla el movimiento de girar ??? y el desplazamiento por el carril
+  // Controla el movimiento el desplazamiento por el carril
   
   update (am) { 
     // Calculamos el tiempo y desplazamos al objeto tanto como sea necesario
@@ -73,8 +78,9 @@ class Objeto extends THREE.Object3D {
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
     this.last_time = time;
 
-    // Devolvemos la posición para que la clase heredera lo actualice O NOOO
-    //this.objeto.position.x = this.pos_x;
+    //var delta = clock.getDelta(); 
+    //this.annie.update(1000 * delta);
+
   }
 
 
@@ -98,20 +104,19 @@ class Objeto extends THREE.Object3D {
     return obj_bound.intersectsBox(cat_bound);
   }
 
+  // ---------- Función get_annie ----------
+  // Devuelve el objeto TextureAnimator
+
+  get_annie(){
+    return this.annie;
+  }
+
 
   // ---------- Función get_pos_x ----------
   // Devuelve la posición en x
 
   get_pos_x(){
     return this.pos_x;
-  }
-
-
-  // ---------- Función get_annie ----------
-  // Devuelve el texture animator
-
-  get_annie() {
-    return this.annie;
   }
 
 

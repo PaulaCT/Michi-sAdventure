@@ -20,7 +20,12 @@ import { Fondo } from './Fondo.js'
  const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
  //const video = document.getElementById('video');
 
- const SEG_HORA = 3;
+ const SEG_HORA = 5;
+
+
+ const INTENSIDAD_AMBIENTE = 0.2;
+ const INTENSIDAD_MEDIA = 0.5;
+ const TRANSICION = 25;
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -41,20 +46,11 @@ class MyScene extends THREE.Scene {
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
     
-    // Sustituiremos esto por el suelo y el fondo
-    this.createGround();
+    // Creamos el suelo y el fondo
+    this.fondo = new Fondo();
+    this.add(this.fondo);
 
-    //this.suelo = new Suelo();
-    // Background
-    //this.mundo = new Mundo();
-    
-    // 
-    this.axis = new THREE.AxesHelper (5);
-    this.axis.position.set(-5,0,0);
-    this.add (this.axis);
-
-    //this.moneda = new Moneda(carril3);
-    //this.axis.add(this.moneda);
+    // Añadimos un controlador de objetos
     this.control = new ControladorObj(carril1, carril2, carril3);
     this.add(this.control);
 
@@ -67,12 +63,6 @@ class MyScene extends THREE.Scene {
     this.gato.geometry.computeBoundingBox();
     this.add(this.gato);
 
-    this.fondo = new Fondo();
-    this.add(this.fondo);
-
-    // this.michi = new Michi();
-    // this.axis.add (this.michi);
-
     this.last_time = Date.now();
     this.am = false;
     
@@ -83,9 +73,10 @@ class MyScene extends THREE.Scene {
     //   El ángulo del campo de visión en grados sexagesimales
     //   La razón de aspecto ancho/alto
     //   Los planos de recorte cercano y lejano
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    //this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.OrthographicCamera( window.innerWidth / - 30, window.innerWidth / 30, window.innerHeight / 30, window.innerHeight / - 30, 1, 1000 );
     // También se indica dónde se coloca
-    this.camera.position.set (0, 0, 80);
+    this.camera.position.set (0, 0, 10);
     // Y hacia dónde mira
     var look = new THREE.Vector3 (0,0,0);
     this.camera.lookAt(look);
@@ -99,12 +90,6 @@ class MyScene extends THREE.Scene {
     this.cameraControl.panSpeed = 0.5;
     // Debe orbitar con respecto al punto de mira de la cámara
     this.cameraControl.target = look;
-  }
-  
-  createGround () {
-    this.fondo = new Fondo();
-    this.add(this.fondo);
-
   }
   
   createGUI () {
@@ -136,21 +121,54 @@ class MyScene extends THREE.Scene {
   }
   
   createLights () {
-    // Se crea una luz ambiental, evita que se vean complentamente negras las zonas donde no incide de manera directa una fuente de luz
-    // La luz ambiental solo tiene un color y una intensidad
-    // Se declara como   var   y va a ser una variable local a este método
-    //    se hace así puesto que no va a ser accedida desde otros métodos
-    var ambientLight = new THREE.AmbientLight(0xccddee, 0.35);
-    // La añadimos a la escena
-    this.add (ambientLight);
-    
-    // Se crea una luz focal que va a ser la luz principal de la escena
-    // La luz focal, además tiene una posición, y un punto de mira
-    // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
-    // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.spotLight = new THREE.SpotLight( 0xffffff, this.guiControls.lightIntensity );
-    this.spotLight.position.set( 60, 60, 40 );
-    this.add (this.spotLight);
+
+    // Añadimos una luz ambiental (noche)
+    var ambiente = 0xF6EDEB;
+    var luz_ambiental = new THREE.AmbientLight(ambiente, INTENSIDAD_AMBIENTE);
+    this.add(luz_ambiental);
+
+    // Definimos los colores del cielo
+
+    var amanecer = 0xF7541F; // Naranja (rojizo)
+    var maniana = 0xFDC177; // Naranjita claro
+    var dia = 0xFEFEFE; // Blanco
+    var atardecer = 0xF83862; // Rosa
+    var anochecer = 0xC048FD; // Violeta
+
+    // Añadimos cinco luces focales
+
+    this.luz_1 = new THREE.SpotLight(amanecer, INTENSIDAD_MEDIA);
+    /*this.luz_2 = new THREE.SpotLight(maniana, 0);
+    this.luz_3 = new THREE.SpotLight(dia, 0);
+    this.luz_4 = new THREE.SpotLight(atardecer, 0);
+    this.luz_5 = new THREE.SpotLight(anochecer, 0);*/
+
+    // Las colocamos en sus posiciones
+
+    this.luz_1.position.set(60, 60, 40);
+    /*this.luz_2.position.set(60, 60, 40);
+    this.luz_3.position.set(60, 60, 40);
+    this.luz_4.position.set(60, 60, 40);
+    this.luz_5.position.set(60, 60, 40);
+
+    // Apuntamos al centro de la escena
+
+    this.objetivo = new THREE.Object3D();
+    this.objetivo.position.set(0, 30, 0);
+    this.luz_1.target = this.luz_2.target = this.luz_3.target = this.luz_4.target =
+    this.luz_5.target = this.objetivo;*/
+
+    // Y las añadimos al padre
+
+    this.add(this.luz_1);
+    /*this.add(this.luz_2);
+    this.add(this.luz_3);
+    this.add(this.luz_4);
+    this.add(this.luz_5);
+    this.add(this.objetivo);
+
+    // Y un controlador
+    this.count_luces = 0;*/
   }
   
   createRenderer (myCanvas) {
@@ -239,9 +257,6 @@ class MyScene extends THREE.Scene {
   }
 
   update () {
-    // Se actualizan los elementos de la escena para cada frame
-    // Se actualiza la intensidad de la luz con lo que haya indicado el usuario en la gui
-    this.spotLight.intensity = this.guiControls.lightIntensity;
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
@@ -266,6 +281,60 @@ class MyScene extends THREE.Scene {
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato);
+
+      // Luces
+      // Amanece
+      /*if (this.count_luces < TRANSICION) {
+          // Se apaga la luz_1, comienza la luz 2
+          this.luz_1.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
+          this.luz_2.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 2 * TRANSICION) {
+          // Luz 2 completamente encendida
+          this.luz_2.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 3 * TRANSICION) {
+          this.luz_2.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+
+      // Ya es por la mañana
+      } else if (this.count_luces < 4 * TRANSICION) {
+          // Se apaga la luz_2, comienza la luz 3
+          this.luz_2.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
+          this.luz_3.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 5 * TRANSICION) {
+          // Luz 2 completamente encendida
+          this.luz_3.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 6 * TRANSICION) {
+          this.luz_3.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+
+      // Es de día
+      } else if (this.count_luces < 7 * TRANSICION) {
+          // Se apaga la luz 3, comienza la luz 4
+          this.luz_3.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
+          this.luz_4.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 8 * TRANSICION) {
+          // Luz 4 completamente encendida
+          this.luz_4.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 9 * TRANSICION) {
+          this.luz_4.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+
+      // Atardece
+      } else if (this.count_luces < 10 * TRANSICION) {
+          // Se apaga la luz 4, comienza la luz 5
+          this.luz_4.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
+          this.luz_5.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 11 * TRANSICION) {
+          // Luz 5 completamente encendida
+          this.luz_5.intensity += INTENSIDAD_MEDIA / TRANSICION;
+      } else if (this.count_luces < 12 * TRANSICION) {
+          this.luz_5.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+
+      // Cae la noche
+      } else if (this.count_luces < 14 * TRANSICION) {
+          // Se apaga completamente la luz 5
+          this.luz_5.intensity -= INTENSIDAD_MEDIA / (TRANSICION * 2); 
+      }else if (this.count_luces == 24 * TRANSICION) {
+          this.count_luces = 0;
+      }
+      this.count_luces++;*/
 
       //this.mundo.update();
       //this.suelo.update();
