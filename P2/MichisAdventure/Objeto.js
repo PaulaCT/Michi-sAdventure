@@ -78,9 +78,6 @@ class Objeto extends THREE.Object3D {
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
     this.last_time = time;
 
-    //var delta = clock.getDelta(); 
-    //this.annie.update(1000 * delta);
-
   }
 
 
