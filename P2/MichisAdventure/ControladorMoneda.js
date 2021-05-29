@@ -44,7 +44,7 @@ class ControladorMoneda extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe un booleano que indique si son las 3 am y el gato
 
-  update(am, gato){  
+  update(am, gato, tiempo){  
 
     // Iremos lanzando monedas cada segundo
     var time = Date.now();
@@ -98,10 +98,10 @@ class ControladorMoneda extends THREE.Object3D {
     }
 
     // Ahora llamamos a sus respectivos métodos update
-    this.moneda1.update(this.primera, am);
-    this.moneda2.update(this.segunda, am);
-    this.moneda3.update(this.tercera, am);
-    this.moneda4.update(this.cuarta, am);
+    this.moneda1.update(this.primera, am, tiempo);
+    this.moneda2.update(this.segunda, am, tiempo);
+    this.moneda3.update(this.tercera, am, tiempo);
+    this.moneda4.update(this.cuarta, am, tiempo);
 
     // Detenemos a las monedas que han llegado al final del camino
     if (this.moneda1.get_pos_x() <= FINAL_CAMINO) this.moneda1.set_visible(false);
