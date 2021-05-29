@@ -19,18 +19,23 @@ import { Gato } from './Gato.js'
 
  const carril1 = {x:25, y:3, z:0.6, s:1, i:1};
  const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
- const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
+ const carril3 = {x:25, y:-1.1, z:1, s:2.5, i:3};
 
- // Para el movimiento del michi. Si se asignaban con las constantes se pasaba por referencia y las constantes cambiaban solas junto con las variables
-  var c1 = {x:25, y:3, z:0.6, s:1, i:1};
-  var c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
-  var c3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
 
  const SEG_HORA = 5;
 
  const INTENSIDAD_AMBIENTE = 0.2;
- const INTENSIDAD_MEDIA = 0.5;
- const TRANSICION = 5;//40;
+ const INTENSIDAD_MEDIA = 0.8;
+ const TRANSICION = 20000;//40;
+
+
+ // Para el cambio de iluminación
+  var l0 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
+  var l1 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
+  var l2 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
+  var l3 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
+  var l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
+  var l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -47,7 +52,50 @@ class MyScene extends THREE.Scene {
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
     // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
     this.createLights ();
+        // Y sus animaciones
+    var that = this;
+    var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
+      that.luz_1.intensity = l0.a;
+    }).onComplete(function(){
+      l0 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
+    });
+    var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
+      that.luz_1.intensity = l1.a;
+      that.luz_2.intensity = l1.b;
+    }).onComplete(function(){
+      l1 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
+    });
+    var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
+      that.luz_2.intensity = l2.b;
+      that.luz_3.intensity = l2.c;
+    }).onComplete(function(){
+      l2 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
+    });
+    var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
+      that.luz_3.intensity = l3.c;
+      that.luz_4.intensity = l3.d;
+    }).onComplete(function(){
+      l3 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
+    });
+    var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
+      that.luz_4.intensity = l4.d;
+      that.luz_5.intensity = l4.e;
+    }).onComplete(function(){
+      l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
+    });
+    var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 5).onUpdate(function() {
+      that.luz_5.intensity = l5.e;
+    }).onComplete(function(){
+      l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
+    });
     
+    manianita.start().chain(pleno_dia);
+    pleno_dia.chain(atardece);
+    atardece.chain(anochece);
+    anochece.chain(noche);
+    noche.chain(amanece);
+    amanece.chain(manianita);
+
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
     
@@ -63,48 +111,6 @@ class MyScene extends THREE.Scene {
 
     this.gato = new Gato();
     this.add(this.gato);
-    /*this.gato.position.set(0, c2.y, c2.z);
-    this.gato.scale.set(c2.s,c2.s,c2.s);
-    this.add(this.gato);
-
-    // Animaciones Tween de movimiento del michi
-    this.mov12 = new TWEEN.Tween(c1).to(c2, 500);
-    this.mov21 = new TWEEN.Tween(c2).to(c1, 500);
-    this.mov23 = new TWEEN.Tween(c2).to(c3, 500);
-    this.mov32 = new TWEEN.Tween(c3).to(c2, 500);
-    var that = this;
-    this.mov12.onUpdate(function(){
-      that.gato.position.set(0, c1.y, c1.z);
-      that.gato.scale.set(c1.s, c1.s, c1.s);
-    });
-    this.mov12.onComplete(function(){
-      c1 = {x:25, y:3, z:0.6, s:1, i:1};
-    });
-    this.mov21.onUpdate(function(){
-      that.gato.position.set(0, c2.y, c2.z);
-      that.gato.scale.set(c2.s, c2.s, c2.s);
-    });
-    this.mov21.onComplete(function(){
-      c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
-
-    });
-    this.mov23.onUpdate(function(){
-      that.gato.position.set(0, c2.y, c2.z);
-      that.gato.scale.set(c2.s, c2.s, c2.s);
-    });
-    this.mov23.onComplete(function(){
-      c2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
-    });
-    this.mov32.onUpdate(function(){
-      that.gato.position.set(0, c3.y, c3.z);
-      that.gato.scale.set(c3.s, c3.s, c3.s);
-    });
-    this.mov32.onComplete(function(){
-      c3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
-    });*/
-
-    // this.michi = new Michi();
-    // this.axis.add (this.michi);
 
     this.last_time = Date.now();
     this.am = false;
@@ -210,8 +216,6 @@ class MyScene extends THREE.Scene {
     this.add(this.luz_5);
     this.add(this.objetivo);
 
-    // Y un controlador
-    this.count_luces = 0;
   }
   
   createRenderer (myCanvas) {
@@ -278,28 +282,6 @@ class MyScene extends THREE.Scene {
     }
   }*/
 
-  /*moverGato(opcion){
-    if(opcion == 'up'){
-      if (this.gato.position.y == carril2.y){
-        this.mov21.start();
-        console.log("2 a 1");
-      }
-      else if (this.gato.position.y == carril3.y){
-        this.mov32.start();
-        console.log("3 a 2");
-      }
-    }
-    if(opcion == 'down') {
-      if (this.gato.position.y == carril1.y){
-        this.mov12.start();
-        console.log("1 a 2");
-      }
-      else if (this.gato.position.y == carril2.y){
-        this.mov23.start();
-        console.log("2 a 3");
-      }
-    }
-  }*/
 
   update () {
     
@@ -318,9 +300,6 @@ class MyScene extends THREE.Scene {
         this.last_time = time;
     }
 
-
-    //TWEEN.update();
-
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
@@ -332,64 +311,7 @@ class MyScene extends THREE.Scene {
       this.gato.update();
 
       // Luces
-      // Amanece
-      if (this.count_luces < TRANSICION) {
-          // Se apaga la luz_1, comienza la luz 2
-          this.luz_1.intensity -= 0.05; 
-          this.luz_2.intensity += 0.05;
-      } else if (this.count_luces < 2 * TRANSICION) {
-          // Luz 2 completamente encendida
-          this.luz_2.intensity += 0.05;
-      } else if (this.count_luces < 3 * TRANSICION) {
-          this.luz_2.intensity -= 0.05;
-
-      // Ya es por la mañana
-      } else if (this.count_luces < 4 * TRANSICION) {
-          // Se apaga la luz_2, comienza la luz 3
-          this.luz_2.intensity -= 0.05; 
-          this.luz_3.intensity += 0.05;
-      } else if (this.count_luces < 5 * TRANSICION) {
-          // Luz 2 completamente encendida
-          this.luz_3.intensity += 0.05;
-      } else if (this.count_luces < 6 * TRANSICION) {
-          this.luz_3.intensity -= 0.05;
-
-      // Es de día
-      } else if (this.count_luces < 7 * TRANSICION) {
-          // Se apaga la luz 3, comienza la luz 4
-          this.luz_3.intensity -= 0.05; 
-          this.luz_4.intensity += 0.05;
-      } else if (this.count_luces < 8 * TRANSICION) {
-          // Luz 4 completamente encendida
-          this.luz_4.intensity += 0.05;
-      } else if (this.count_luces < 9 * TRANSICION) {
-          this.luz_4.intensity -= 0.05;
-
-      // Atardece
-      } else if (this.count_luces < 10 * TRANSICION) {
-          // Se apaga la luz 4, comienza la luz 5
-          this.luz_4.intensity -= 0.05; 
-          this.luz_5.intensity += 0.05;
-      } else if (this.count_luces < 11 * TRANSICION) {
-          // Luz 5 completamente encendida
-          this.luz_5.intensity += 0.05;
-      } else if (this.count_luces < 12 * TRANSICION) {
-          this.luz_5.intensity -= 0.05;
-
-      // Cae la noche
-      } else if (this.count_luces < 14 * TRANSICION) {
-          // Se apaga completamente la luz 5
-          this.luz_5.intensity -= 0.025; 
-      }else if (this.count_luces == 24 * TRANSICION) {
-        this.luz_1.intensity = this.luz_2.intensity = this.luz_3.intensity 
-            = this.luz_4.intensity = this.luz_5.intensity = 0;
-        this.count_luces = 0;
-      }
-      this.count_luces++;
-
-      //this.mundo.update();
-      //this.suelo.update();
-      //this.michi.update();
+      TWEEN.update();
     }
     
     

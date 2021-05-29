@@ -28,7 +28,7 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
     this.frameActual++;
 
     // Si hemos llegado al ultimo frame volveremos al primero
-    if (this.frameActual == j)
+    if (this.frameActual >= j)
       this.frameActual = 0;
       
     // Columna en la que estamos
@@ -40,6 +40,11 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
     // Desplazamos verticalmente
     textura.offset.y = filaActual / this.verticales;
     
+  };
+
+  // Actualiza el frame actual
+  this.restart = function(){
+    this.frameActual = this.horizontales;
   };
 
   

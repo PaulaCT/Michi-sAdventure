@@ -85,6 +85,14 @@ class Habilidad extends THREE.Object3D {
   }
   
 
+  // ---------- Función getMatrixWorld ----------
+  // Devuelve el matrixWordl
+
+  getMatrixWorld() {
+    return this.hab.matrixWorld;
+  }
+  
+
   // ---------- Función get_pos_x ----------
   // Devuelve la posición en x
 
@@ -92,6 +100,13 @@ class Habilidad extends THREE.Object3D {
     return this.pos_x;
   }
 
+
+  // ---------- Función get_pos_y ----------
+  // Devuelve la posición en y
+
+  get_pos_y(){
+    return this.position.y;
+  }
 }
 
 

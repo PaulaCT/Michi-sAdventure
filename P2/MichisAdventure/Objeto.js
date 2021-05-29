@@ -95,10 +95,11 @@ class Objeto extends THREE.Object3D {
     var cat_bound = new THREE.Box3();
 
     obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
-    cat_bound.copy(michi.getBoundingBox()).applyMatrix4(michi.matrixWorld);
-    
+    cat_bound.copy(michi.getBoundingBox()).applyMatrix4(michi.getMatrixWorld());
+
     return obj_bound.intersectsBox(cat_bound);
   }
+
 
   // ---------- Función get_annie ----------
   // Devuelve el objeto TextureAnimator
@@ -112,7 +113,15 @@ class Objeto extends THREE.Object3D {
   // Devuelve la posición en x
 
   get_pos_x(){
-    return this.pos_x;
+    return this.objeto.position.x;
+  }
+
+
+  // ---------- Función get_pos_y ----------
+  // Devuelve la posición en y
+
+  get_pos_y(){
+    return this.position.y;
   }
 
 

@@ -196,11 +196,11 @@ class ControladorObj extends THREE.Object3D {
     for (var i=0; i<6; i++){
       if (!this.moneda_lista[i]) {
         this.dinero = this.dinero + this.monedas[i].get_recogidas();
-        this.monedas[i].update(am,gato);
+        this.monedas[i].update(am, gato);
       } 
       if (!this.obstaculo_listo[i]) {
         this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
-        this.obstaculos[i].update(am,gato);
+        this.obstaculos[i].update(am, gato, this.vidas);
       } 
     }
   }
