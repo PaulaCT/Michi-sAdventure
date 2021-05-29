@@ -2,6 +2,8 @@
 import * as THREE from '../libs/three.module.js'
 import { Objeto } from './Objeto.js'
 
+var clock = new THREE.Clock();
+
 class Moneda extends THREE.Object3D {
   // ---------- Constructor ----------
   // Recibe el carril en el que aparecerá (sus coordenadas)
@@ -10,7 +12,7 @@ class Moneda extends THREE.Object3D {
     super();
 
     // "Hereda" de Object.js
-    this.moneda = new Objeto('./michis-imgs/moneda.png', carril);
+    this.moneda = new Objeto('./michis-imgs/coin_extended.png', carril, 1, 6);
 
     // Y lo añadimos como hijo del Object3D (el this)
     this.add(this.moneda); 
@@ -21,7 +23,7 @@ class Moneda extends THREE.Object3D {
     this.invisible = false;
 
     // Controlaremos la animación desde aquí
-    //this.annie = this.moneda.get_annie();
+    this.annie = this.moneda.get_annie();
   }
 
 
@@ -39,11 +41,16 @@ class Moneda extends THREE.Object3D {
   //    un booleano que indique si son las 3am
   // Controla el movimiento de botar y llama al método update de Objeto.js
 
-  update(mover, am){    
+  update(mover, am, tiempo){    
     if (!this.invisible){
         if (mover) {
+
+            // Movimiento: girar
+            this.annie.animacion(0, 6, tiempo);
+
             // Movimiento: botar
 
+            /*
             if (this.arriba){
                 if (this.pos_y > -0.1){
                     this.pos_y = this.pos_y - 0.025;
@@ -54,9 +61,7 @@ class Moneda extends THREE.Object3D {
                 } else this.arriba = true;
             }
             this.position.y = this.pos_y;
-
-            // Movimiento: girar
-            //this.annie.update();
+            */
 
             // Llamamos al update de Objeto.js
             this.moneda.update(am);  

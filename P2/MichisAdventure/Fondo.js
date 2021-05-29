@@ -1,6 +1,5 @@
 // Dependencias
 import * as THREE from '../libs/three.module.js'
-import { TextureAnimator } from './TextureAnimator.js'
 import * as TWEEN from '../libs/tween.esm.js'
 import { ThreeBSP } from '../libs/ThreeBSP.js'
 
@@ -65,8 +64,8 @@ class Fondo extends THREE.Object3D {
     // Posiciones
     const dia = {p:0};
     const noche = {p:0.5};
-    var loop_dia = 12000;
-    var loop_noche = 10000;
+    var loop_dia = 12000 / VELOCIDAD_FONDO;
+    var loop_noche = 10000 / VELOCIDAD_FONDO;
 
     var bucle_dia = new TWEEN.Tween(dia).to(noche, loop_dia).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(()=>{
         var pos = this.recorrido_sol_luna.getPointAt(dia.p);
@@ -92,12 +91,14 @@ class Fondo extends THREE.Object3D {
 
     // Añadimos las montañas (la textura se moverá en algún futuro)
 
-    var montaniaGeom = new THREE.BoxGeometry (50,30,0.2);
-    var montaniatexture = new THREE.TextureLoader().load('./michis-imgs/montania.png');
+    var montaniaGeom = new THREE.BoxGeometry (80,30,0.2);
+    var montaniatexture = new THREE.TextureLoader().load('./michis-imgs/montania_toro.png');
+    montaniatexture.wrapS = montaniatexture.wrapT = THREE.RepeatWrapping; 
     var montaniaMat = new THREE.MeshPhongMaterial({map: montaniatexture, transparent: true,});
     this.montania = new THREE.Mesh (montaniaGeom, montaniaMat);
     this.montania.position.y = 15;
     this.add (this.montania);
+    this.montania_count = 0;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -159,6 +160,7 @@ class Fondo extends THREE.Object3D {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     // La caja límite
+
     this.limite = this.create_caja();
     var texture_limite = new THREE.TextureLoader().load('./michis-imgs/stars-ini.jpg');
     this.limite.material = new THREE.MeshPhongMaterial({map: texture_limite});
@@ -188,7 +190,9 @@ class Fondo extends THREE.Object3D {
   
   update () { 
     // Se mueven
-    //   - Las montañas con TextureAnimator
+    //   - Las montañas se desplazan lentamente
+    this.montania_count = this.montania_count + VELOCIDAD_FONDO / 500;
+    this.montania.material.map.offset.x = this.montania_count;
 
     //   - Las nubes (hacia la izquierda)
     this.nube1.position.x = this.nube1.position.x - VELOCIDAD_FONDO;
@@ -197,9 +201,8 @@ class Fondo extends THREE.Object3D {
     if (this.nube1.position.x <= -25) this.nube1.position.x = 25;
     if (this.nube2.position.x <= -25) this.nube2.position.x = 25;
 
-    //   - El sol y la luna (dan vueltas)
+    //   - El sol y la luna (dan vueltas) 
     TWEEN.update();
-    
 
   }
 }

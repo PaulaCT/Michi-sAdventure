@@ -10,7 +10,7 @@ class Obstaculo extends THREE.Object3D {
     super();
 
     // "Hereda" de Object.js
-    this.obstaculo = new Objeto('./michis-imgs/cerberus.png', carril);
+    this.obstaculo = new Objeto('./michis-imgs/cerberus.png', carril, 1, 1);
 
     // Y lo añadimos como hijo del Object3D (el this)
     this.add(this.obstaculo); 
@@ -54,11 +54,23 @@ class Obstaculo extends THREE.Object3D {
   // la realiza el obstáculo también
 
   colision(gato){
-    if (this.obstaculo.colision(gato)) {
-      //gato.hurt();
+    // Si se ha lanzado la habilidad y nos puede afectar
+    if (gato.get_habilidad() == true && gato.hab.get_pos_x() <= this.obstaculo.get_pos_x()) {
+      if (this.obstaculo.colision(gato.get_hab()) == true) {
+        console.log("colision");
+        this.set_visible(false);
+        // Editar esto
+        gato.habilidad = false;
+        gato.hab.set_visible(false);
+      }
+
+    // Si no
+    } else if (this.obstaculo.colision(gato)) {
+      gato.hurt();
       //this.explotar = true; this.contador_explosión = 0;
       return true;
     }
+    
     return false;
   }
 
