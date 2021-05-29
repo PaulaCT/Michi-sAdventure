@@ -40,9 +40,10 @@ class Obstaculo extends THREE.Object3D {
             // Aquí implementaríamos cosas para que explotara al colisionar
             // if (explotar) { animación + this.contador_explosion++ }
             // else
+
             // Llamamos al update de Objeto.js
             this.obstaculo.update(am);
-            // if (this.contador_explosion == 6) this.explotar = false;
+            // if (this.contador_explosion == 6) this.explotar = false; this.contador_explosion = 0;
         } 
     } 
   }
@@ -52,12 +53,13 @@ class Obstaculo extends THREE.Object3D {
   // Devuelve true si el obstáculo ha colisionado con el gato
   // Si ha colisionado llama al gato para que realice la animación y 
   // la realiza el obstáculo también
+  // Recibe además del gato, las vidas restantes
 
-  colision(gato){
+  colision(gato, vidas){
     // Si se ha lanzado la habilidad y nos puede afectar
-    if (gato.get_habilidad() == true && gato.hab.get_pos_x() <= this.obstaculo.get_pos_x()) {
-      if (this.obstaculo.colision(gato.get_hab()) == true) {
-        console.log("colision");
+    if (gato.get_habilidad() && gato.hab.get_pos_y() == this.obstaculo.get_pos_y() &&
+        gato.hab.get_pos_x() <= this.obstaculo.get_pos_x()) {
+      if (this.obstaculo.colision(gato.get_hab())) {
         this.set_visible(false);
         // Editar esto
         gato.habilidad = false;
@@ -66,7 +68,9 @@ class Obstaculo extends THREE.Object3D {
 
     // Si no
     } else if (this.obstaculo.colision(gato)) {
-      gato.hurt();
+      // Si solo le quedaba una vida, muere
+      if (vidas == 1) gato.die();
+      else gato.hurt();
       //this.explotar = true; this.contador_explosión = 0;
       return true;
     }

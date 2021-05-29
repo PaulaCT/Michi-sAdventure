@@ -202,7 +202,7 @@ class Fondo extends THREE.Object3D {
     if (this.nube2.position.x <= -25) this.nube2.position.x = 25;
 
     //   - El sol y la luna (dan vueltas) 
-    TWEEN.update();
+    //TWEEN.update();
 
   }
 }

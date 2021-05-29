@@ -200,7 +200,7 @@ class ControladorObj extends THREE.Object3D {
       } 
       if (!this.obstaculo_listo[i]) {
         this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
-        this.obstaculos[i].update(am,gato);
+        this.obstaculos[i].update(am, gato, this.vidas);
       } 
     }
   }
