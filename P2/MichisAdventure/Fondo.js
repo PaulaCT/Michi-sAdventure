@@ -22,7 +22,6 @@ class Fondo extends THREE.Object3D {
     this.cielo = new THREE.Mesh (cieloGeom, cieloMat);
     this.cielo.position.y = 15;
     this.cielo.position.z = -0.6;
-    this.cielo.computeFaceNormals();
     
     this.add (this.cielo);
 
@@ -165,7 +164,6 @@ class Fondo extends THREE.Object3D {
     this.limite = this.create_caja();
     var texture_limite = new THREE.TextureLoader().load('./michis-imgs/stars-ini.jpg');
     this.limite.material = new THREE.MeshPhongMaterial({map: texture_limite});
-    this.limite..computeFaceNormals();
     this.add(this.limite);
   }
 
