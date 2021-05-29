@@ -20,7 +20,6 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
 
   // Frame actual
   this.frameActual = 0;
-    
   
   this.animacion = function(fila, numFrames, milliSec){
     

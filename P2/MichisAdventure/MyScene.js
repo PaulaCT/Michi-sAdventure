@@ -35,6 +35,7 @@ import { Gato } from './Gato.js'
 
  var clock = new THREE.Clock();
 
+
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
     super();
@@ -334,6 +335,64 @@ class MyScene extends THREE.Scene {
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato, 1000 * delta);
+
+      this.gato.update();
+
+      // Luces
+      // Amanece
+      if (this.count_luces < TRANSICION) {
+          // Se apaga la luz_1, comienza la luz 2
+          this.luz_1.intensity -= 0.05; 
+          this.luz_2.intensity += 0.05;
+      } else if (this.count_luces < 2 * TRANSICION) {
+          // Luz 2 completamente encendida
+          this.luz_2.intensity += 0.05;
+      } else if (this.count_luces < 3 * TRANSICION) {
+          this.luz_2.intensity -= 0.05;
+
+      // Ya es por la mañana
+      } else if (this.count_luces < 4 * TRANSICION) {
+          // Se apaga la luz_2, comienza la luz 3
+          this.luz_2.intensity -= 0.05; 
+          this.luz_3.intensity += 0.05;
+      } else if (this.count_luces < 5 * TRANSICION) {
+          // Luz 2 completamente encendida
+          this.luz_3.intensity += 0.05;
+      } else if (this.count_luces < 6 * TRANSICION) {
+          this.luz_3.intensity -= 0.05;
+
+      // Es de día
+      } else if (this.count_luces < 7 * TRANSICION) {
+          // Se apaga la luz 3, comienza la luz 4
+          this.luz_3.intensity -= 0.05; 
+          this.luz_4.intensity += 0.05;
+      } else if (this.count_luces < 8 * TRANSICION) {
+          // Luz 4 completamente encendida
+          this.luz_4.intensity += 0.05;
+      } else if (this.count_luces < 9 * TRANSICION) {
+          this.luz_4.intensity -= 0.05;
+
+      // Atardece
+      } else if (this.count_luces < 10 * TRANSICION) {
+          // Se apaga la luz 4, comienza la luz 5
+          this.luz_4.intensity -= 0.05; 
+          this.luz_5.intensity += 0.05;
+      } else if (this.count_luces < 11 * TRANSICION) {
+          // Luz 5 completamente encendida
+          this.luz_5.intensity += 0.05;
+      } else if (this.count_luces < 12 * TRANSICION) {
+          this.luz_5.intensity -= 0.05;
+
+      // Cae la noche
+      } else if (this.count_luces < 14 * TRANSICION) {
+          // Se apaga completamente la luz 5
+          this.luz_5.intensity -= 0.025; 
+      }else if (this.count_luces == 24 * TRANSICION) {
+        this.luz_1.intensity = this.luz_2.intensity = this.luz_3.intensity 
+            = this.luz_4.intensity = this.luz_5.intensity = 0;
+        this.count_luces = 0;
+      }
+      this.count_luces++;
 
       this.gato.update();
 
