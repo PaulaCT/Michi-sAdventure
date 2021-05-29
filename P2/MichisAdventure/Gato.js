@@ -1,12 +1,18 @@
 import * as THREE from '../libs/three.module.js'
+import { Habilidad } from './Habilidad.js'
+import { TextureAnimator } from './michis-lib.js'
 
 var clock = new THREE.Clock();
+
+// Constantes
+const FINAL_CAMINO_H = 25;
+const carril1 = {x:25, y:3, z:0.6, s:1, i:1};
+const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
+const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
  
 class Gato extends THREE.Object3D {
-  constructor(gui,titleGui) {
+  constructor() {
     super();
-    
-    this.createGUI(gui,titleGui);
     
     // Cargamos la textura
     var runTexture = new THREE.TextureLoader().load('../gato/gato.png');
@@ -30,95 +36,145 @@ class Gato extends THREE.Object3D {
     // Para la colisión
     this.gato.geometry.computeBoundingBox();
 
+    this.gato.position.set(0, carril2.y, carril2.z);
+    this.gato.scale.set(carril2.s,carril2.s,carril2.s);
+
     this.add(this.gato);  
     
+    // Añadimos la habilidad
+    this.hab = new Habilidad();
+    this.habilidad = false;
+    this.add(this.hab)
     
-    
+    // Para las animaciones
+    this.label = 'run';
+    this.contador = 0;
+
+    this.carril_actual = carril2;
   }
+
 
   getBoundingBox(){
     return this.gato.geometry.boundingBox;
   }
-  
-  createGUI (gui,titleGui) {
-    // Controles para el tamaño, la orientación y la posición de la caja
-    
-    
+
+
+  // ---------- Función lanzar_habilidad ----------
+  // Inicializa la habilidad
+
+  lanzar_habilidad(carril) {
+    var pos_actual = { x: 0, y: this.gato.position.y, z: this.gato.position.z,
+      s: this.gato.scale.x };
+    this.hab.activate(pos_actual);
+    this.habilidad = true;
   }
+
   
-  update (anim) {
+  update () {
     var delta = clock.getDelta();
 
-    switch(anim){
+    switch(this.label){
       case 'run':
-        this.anim.update(0, 4, 1000 * delta);
+        this.anim.animacion(0, 4);
       break;
       case 'die':
-        this.anim.update(1, 5, 1000 * delta);
+        this.anim.animacion(1, 5);
       break;
       case 'hurt':
-        this.anim.update(2, 5, 1000 * delta);
+        if (this.contador <= 5) {
+          this.anim.animacion(2, 5);
+          if (this.contador == 5) {
+            this.label = 'run';
+            this.contador = 0;
+          }
+        }
+        this.anim.animacion(2, 5);
       break;
       case 'jump':
-        this.anim.update(3, 8, 1000 * delta);
+        if (this.contador < 8) {
+          this.anim.animacion(3, 8);
+          this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
+          this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
+          this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
+          this.gato.scale.y += (this.where.s - this.carril_actual.s) / 8;
+          this.gato.scale.z += (this.where.s - this.carril_actual.s) / 8;
+          this.contador++;
+          if (this.contador == 8) {
+            this.carril_actual = this.where;
+            this.label = 'run';
+            this.contador = 0;
+          }
+        }
       break;
       case 'idle':
-        this.anim.update(4, 13, 1000 * delta);
+        this.anim.animacion(4, 13);
       break;
       
     }   
     
-
+    // Si se ha lanzado la habilidad
+    if (this.habilidad) { 
+      this.hab.update();
+      // Si no ha colisionado con nada
+      if (this.hab.get_pos_x() >= FINAL_CAMINO_H) {
+        this.habilidad = false;
+        this.hab.set_visible(false);
+      }
     
-    
+    }
   }
 
-}
+  // ---------- Función jump ----------
+  // Inicia el movimiento de saltar si es posible
+
+  jump(direccion) {
+    if (this.label == 'run') {
+      if(direccion == 'up'){
+        if (this.carril_actual == carril2){
+          this.where = carril1;
+        }
+        else if (this.carril_actual == carril3){
+          this.where = carril2;
+        }
+      }
+      if(direccion == 'down') {
+        if (this.carril_actual == carril1){
+          this.where = carril2;
+        }
+        else if (this.carril_actual == carril2){
+          this.where = carril3;
+        }
+      }
+      this.label = 'jump';
+    }
+  }
+
+  // ---------- Función hurt ----------
+
+  hurt() {
+    if (this.label == 'jump') {
+      this.gato.position.set(this.where.x, this.where.y, this.where.z);
+      this.gato.scale.set(this.where.s, this.where.s, this.where.s);
+      this.contador = 0;
+    }
+    this.label = 'jump';
+  }
 
 
-function TextureAnimator(textura, casillasH, casillasV, duracionCasilla){	
-		
-	this.horizontales = casillasH;
-	this.verticales = casillasV;
 
-  // Hacemos que la textura se repita mediante RepeatWrapping
-	textura.wrapS = textura.wrapT = THREE.RepeatWrapping; 
+  // ---------- Función get_habilidad ----------
+  // Devuelve el booleano
 
-  // La "repeticion" será 1 / nºcasillas, equivale a ampliar dentro de la textura, mostrando solo una de las casillas
-	textura.repeat.set( 1 / this.horizontales, 1 / this.verticales );
+  get_habilidad() {
+    return this.habilidad;
+  }
 
-	// Duracion para cada frame
-	this.duracion = duracionCasilla;
+  // ---------- Función get_hab ----------
+  // Devuelve el objeto
 
-	// Tiempo que se ha mostrado el frame actual
-	this.duracionActual = 0;
-
-	// Frame actual
-	this.frameActual = 0;
-
-  this.update = function(fila, numFrames, milliSec){
-		this.duracionActual += milliSec;
-		while (this.duracionActual > this.duracion){
-
-      // Pasamos de frame y actualizamos el tiempo de duracion
-			this.duracionActual -= this.duracion;
-			this.frameActual++;
-
-      // Si hemos llegado al ultimo frame volveremos al primero
-			if (this.frameActual == numFrames)
-				this.frameActual = 0;
-      
-      // Columna en la que estamos
-			var columnaActual = this.frameActual % this.horizontales;
-      // Desplazamos horizontalmente
-			textura.offset.x = columnaActual / this.horizontales;
-      // Fila en la que estamos
-
-			textura.offset.y = fila / this.verticales;
-
-		}
-	};
-
+  get_hab() {
+    return this.hab;
+  }
 }
 
 export { Gato };

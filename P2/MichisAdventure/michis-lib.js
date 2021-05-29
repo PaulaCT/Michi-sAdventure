@@ -23,27 +23,23 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
     
   // i es la fila de la animación
   // j es el número de frames de la animación
-  this.animacion = function(i, j, milliSec){
-    this.duracionActual += milliSec;
-    while (this.duracionActual > this.duracion){
+  this.animacion = function(i, j){
+    
+    this.frameActual++;
 
-      // Pasamos de frame y actualizamos el tiempo de duracion
-      this.duracionActual -= this.duracion;
-      this.frameActual++;
-
-      // Si hemos llegado al ultimo frame volveremos al primero
-      if (this.frameActual == j)
-        this.frameActual = 0;
+    // Si hemos llegado al ultimo frame volveremos al primero
+    if (this.frameActual == j)
+      this.frameActual = 0;
       
-      // Columna en la que estamos
-      var columnaActual = this.frameActual % this.horizontales;
-      // Desplazamos horizontalmente
-      textura.offset.x = columnaActual / this.horizontales;
-      // Fila en la que estamos
-      var filaActual = i;
-      // Desplazamos verticalmente
-      textura.offset.y = filaActual / this.verticales;
-    }
+    // Columna en la que estamos
+    var columnaActual = this.frameActual % this.horizontales;
+    // Desplazamos horizontalmente
+    textura.offset.x = columnaActual / this.horizontales;
+    // Fila en la que estamos
+    var filaActual = i;
+    // Desplazamos verticalmente
+    textura.offset.y = filaActual / this.verticales;
+    
   };
 
   

@@ -3,6 +3,7 @@ import * as THREE from '../libs/three.module.js'
 import { TextureAnimator } from './michis-lib.js'
 var clock = new THREE.Clock();
 import { Gato } from './Gato.js'
+import { Habilidad } from './Habilidad.js'
 
 // Constantes
 const VELOCIDAD = 4;
@@ -86,20 +87,16 @@ class Objeto extends THREE.Object3D {
   // ---------- Función colision ----------
   // Devuelve true si el objeto ha colisionado con el gato
 
-  colision(gato){
+  colision(michi){
     this.objeto.updateMatrixWorld();
-    //if (gato.habilidadLanzada()) gato.habilidad.updateMatrixWorld();
-    //else
-    gato.updateMatrixWorld();
+    michi.updateMatrixWorld();
     
     var obj_bound = new THREE.Box3();
     var cat_bound = new THREE.Box3();
 
     obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
-    //if (gato.habilidadLanzada()) cat_bound.copy(gato.habilidad.geometry.boundingBox).applyMatrix4(gato.habilidad.matrixWorld);
-    //else
-    cat_bound.copy(gato.getBoundingBox()).applyMatrix4(gato.matrixWorld)
-
+    cat_bound.copy(michi.getBoundingBox()).applyMatrix4(michi.matrixWorld);
+    
     return obj_bound.intersectsBox(cat_bound);
   }
 

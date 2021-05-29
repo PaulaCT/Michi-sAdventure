@@ -28,10 +28,9 @@ import { Gato } from './Gato.js'
 
  const SEG_HORA = 5;
 
-
  const INTENSIDAD_AMBIENTE = 0.2;
  const INTENSIDAD_MEDIA = 0.5;
- const TRANSICION = 25;
+ const TRANSICION = 5;//40;
 
 class MyScene extends THREE.Scene {
   constructor (myCanvas) {
@@ -63,7 +62,8 @@ class MyScene extends THREE.Scene {
     // Aquí irá el michi cuando se cree supongo
 
     this.gato = new Gato();
-    this.gato.position.set(0, c2.y, c2.z);
+    this.add(this.gato);
+    /*this.gato.position.set(0, c2.y, c2.z);
     this.gato.scale.set(c2.s,c2.s,c2.s);
     this.add(this.gato);
 
@@ -101,10 +101,7 @@ class MyScene extends THREE.Scene {
     });
     this.mov32.onComplete(function(){
       c3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
-    });
-    
-    this.fondo = new Fondo();
-    this.add(this.fondo);
+    });*/
 
     // this.michi = new Michi();
     // this.axis.add (this.michi);
@@ -184,15 +181,15 @@ class MyScene extends THREE.Scene {
     // Añadimos cinco luces focales
 
     this.luz_1 = new THREE.SpotLight(amanecer, INTENSIDAD_MEDIA);
-    /*this.luz_2 = new THREE.SpotLight(maniana, 0);
+    this.luz_2 = new THREE.SpotLight(maniana, 0);
     this.luz_3 = new THREE.SpotLight(dia, 0);
     this.luz_4 = new THREE.SpotLight(atardecer, 0);
-    this.luz_5 = new THREE.SpotLight(anochecer, 0);*/
+    this.luz_5 = new THREE.SpotLight(anochecer, 0);
 
     // Las colocamos en sus posiciones
 
     this.luz_1.position.set(60, 60, 40);
-    /*this.luz_2.position.set(60, 60, 40);
+    this.luz_2.position.set(60, 60, 40);
     this.luz_3.position.set(60, 60, 40);
     this.luz_4.position.set(60, 60, 40);
     this.luz_5.position.set(60, 60, 40);
@@ -202,19 +199,19 @@ class MyScene extends THREE.Scene {
     this.objetivo = new THREE.Object3D();
     this.objetivo.position.set(0, 30, 0);
     this.luz_1.target = this.luz_2.target = this.luz_3.target = this.luz_4.target =
-    this.luz_5.target = this.objetivo;*/
+    this.luz_5.target = this.objetivo;
 
     // Y las añadimos al padre
 
     this.add(this.luz_1);
-    /*this.add(this.luz_2);
+    this.add(this.luz_2);
     this.add(this.luz_3);
     this.add(this.luz_4);
     this.add(this.luz_5);
     this.add(this.objetivo);
 
     // Y un controlador
-    this.count_luces = 0;*/
+    this.count_luces = 0;
   }
   
   createRenderer (myCanvas) {
@@ -262,11 +259,11 @@ class MyScene extends THREE.Scene {
     var keyCode = event.which;
     switch(keyCode) {
         // Up
-        case 38: this.moverGato('up'); break;
+        case 38: this.gato.jump('up'); break;
         // Down
-        case 40: this.moverGato('down'); break;
+        case 40: this.gato.jump('down'); break;
         //Space
-        case 32: console.log("Habilidad"); break;
+        case 32: this.gato.lanzar_habilidad(); break;
         default: break;
     }
   }
@@ -281,7 +278,7 @@ class MyScene extends THREE.Scene {
     }
   }*/
 
-  moverGato(opcion){
+  /*moverGato(opcion){
     if(opcion == 'up'){
       if (this.gato.position.y == carril2.y){
         this.mov21.start();
@@ -302,7 +299,7 @@ class MyScene extends THREE.Scene {
         console.log("2 a 3");
       }
     }
-  }
+  }*/
 
   update () {
     
@@ -321,9 +318,8 @@ class MyScene extends THREE.Scene {
         this.last_time = time;
     }
 
-    this.gato.update('run');
 
-    TWEEN.update();
+    //TWEEN.update();
 
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
@@ -333,59 +329,63 @@ class MyScene extends THREE.Scene {
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato);
 
+      this.gato.update();
+
       // Luces
       // Amanece
-      /*if (this.count_luces < TRANSICION) {
+      if (this.count_luces < TRANSICION) {
           // Se apaga la luz_1, comienza la luz 2
-          this.luz_1.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
-          this.luz_2.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_1.intensity -= 0.05; 
+          this.luz_2.intensity += 0.05;
       } else if (this.count_luces < 2 * TRANSICION) {
           // Luz 2 completamente encendida
-          this.luz_2.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_2.intensity += 0.05;
       } else if (this.count_luces < 3 * TRANSICION) {
-          this.luz_2.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_2.intensity -= 0.05;
 
       // Ya es por la mañana
       } else if (this.count_luces < 4 * TRANSICION) {
           // Se apaga la luz_2, comienza la luz 3
-          this.luz_2.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
-          this.luz_3.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_2.intensity -= 0.05; 
+          this.luz_3.intensity += 0.05;
       } else if (this.count_luces < 5 * TRANSICION) {
           // Luz 2 completamente encendida
-          this.luz_3.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_3.intensity += 0.05;
       } else if (this.count_luces < 6 * TRANSICION) {
-          this.luz_3.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_3.intensity -= 0.05;
 
       // Es de día
       } else if (this.count_luces < 7 * TRANSICION) {
           // Se apaga la luz 3, comienza la luz 4
-          this.luz_3.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
-          this.luz_4.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_3.intensity -= 0.05; 
+          this.luz_4.intensity += 0.05;
       } else if (this.count_luces < 8 * TRANSICION) {
           // Luz 4 completamente encendida
-          this.luz_4.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_4.intensity += 0.05;
       } else if (this.count_luces < 9 * TRANSICION) {
-          this.luz_4.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_4.intensity -= 0.05;
 
       // Atardece
       } else if (this.count_luces < 10 * TRANSICION) {
           // Se apaga la luz 4, comienza la luz 5
-          this.luz_4.intensity -= INTENSIDAD_MEDIA / TRANSICION; 
-          this.luz_5.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_4.intensity -= 0.05; 
+          this.luz_5.intensity += 0.05;
       } else if (this.count_luces < 11 * TRANSICION) {
           // Luz 5 completamente encendida
-          this.luz_5.intensity += INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_5.intensity += 0.05;
       } else if (this.count_luces < 12 * TRANSICION) {
-          this.luz_5.intensity -= INTENSIDAD_MEDIA / TRANSICION;
+          this.luz_5.intensity -= 0.05;
 
       // Cae la noche
       } else if (this.count_luces < 14 * TRANSICION) {
           // Se apaga completamente la luz 5
-          this.luz_5.intensity -= INTENSIDAD_MEDIA / (TRANSICION * 2); 
+          this.luz_5.intensity -= 0.025; 
       }else if (this.count_luces == 24 * TRANSICION) {
-          this.count_luces = 0;
+        this.luz_1.intensity = this.luz_2.intensity = this.luz_3.intensity 
+            = this.luz_4.intensity = this.luz_5.intensity = 0;
+        this.count_luces = 0;
       }
-      this.count_luces++;*/
+      this.count_luces++;
 
       //this.mundo.update();
       //this.suelo.update();
