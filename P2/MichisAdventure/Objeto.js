@@ -6,8 +6,8 @@ import { Gato } from './Gato.js'
 import { Habilidad } from './Habilidad.js'
 
 // Constantes
-const VELOCIDAD = 0.02;
-const VELOCIDAD_3AM = 0.002;
+const VELOCIDAD = 10;
+const VELOCIDAD_3AM = 10;
 
 class Objeto extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -70,13 +70,11 @@ class Objeto extends THREE.Object3D {
   // Controla el movimiento el desplazamiento por el carril
   
   update (am, delta) { 
-    // Calculamos el tiempo y desplazamos al objeto tanto como sea necesario
-    //var time = Date.now();
-    //var segundos = -(this.last_time - time) / 1000;
+    // desplazamos al objeto tanto como sea necesario
+    
     if (am) this.pos_x = this.pos_x - (delta * VELOCIDAD_3AM);
     else this.pos_x = this.pos_x - (delta * VELOCIDAD);
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
-    //this.last_time = time;
 
   }
 

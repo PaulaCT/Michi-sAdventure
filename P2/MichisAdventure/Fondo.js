@@ -5,7 +5,7 @@ import { ThreeBSP } from '../libs/ThreeBSP.js'
 
 // Constantes
 const VELOCIDAD_FONDO = 0.002;
-const VELOCIDAD_SUELO = 0.02;
+const VELOCIDAD_SUELO = 0.2;
 
 class Fondo extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -201,20 +201,21 @@ class Fondo extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe la hora
   
-  update (tiempo) { 
+  update (delta) { 
     // Se mueven
     //   - Las montañas se desplazan lentamente
     //this.montania_count = this.montania_count + VELOCIDAD_FONDO / 500;
     //this.montania.material.map.offset.x = this.montania_count;
-    
-    this.montania.material.map.offset.x = VELOCIDAD_FONDO * tiempo;
+    this.montania.material.map.offset.x += VELOCIDAD_FONDO * delta;
 
-    this.suelo.material.map.offset.x = this.carril1.material.map.offset.x = 
-    this.carril2.material.map.offset.x = this.carril3.material.map.offset.x = VELOCIDAD_SUELO * tiempo;
+    this.suelo.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril1.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril2.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril3.material.map.offset.x += VELOCIDAD_SUELO * delta;
 
     //   - Las nubes (hacia la izquierda)
-    this.nube1.position.x = this.nube1.position.x - (VELOCIDAD_FONDO * tiempo);
-    this.nube2.position.x = this.nube2.position.x - (VELOCIDAD_FONDO * tiempo);
+    this.nube1.position.x = this.nube1.position.x - (VELOCIDAD_FONDO * delta);
+    this.nube2.position.x = this.nube2.position.x - (VELOCIDAD_FONDO * delta);
     
     if (this.nube1.position.x <= -25) this.nube1.position.x = 25;
     if (this.nube2.position.x <= -25) this.nube2.position.x = 25;

@@ -307,11 +307,11 @@ class MyScene extends THREE.Scene {
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
-      var delta = 1000 * clock.getDelta(); 
+      var delta = clock.getDelta(); 
       var tiempo = clock.elapsedTime;
 
       // El fondo variará en función de la hora (no lo necesita de momento)
-      this.fondo.update(tiempo);
+      this.fondo.update(delta);
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
       this.control.update(this.am, this.gato, delta);
