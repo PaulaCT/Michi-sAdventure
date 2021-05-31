@@ -46,6 +46,11 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
     
   };
 
+  // Actualiza el frame actual
+  this.restart = function(){
+    this.frameActual = this.horizontales;
+  };
+
   
 
 }

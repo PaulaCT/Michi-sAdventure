@@ -6,8 +6,8 @@ import { Gato } from './Gato.js'
 import { Habilidad } from './Habilidad.js'
 
 // Constantes
-const VELOCIDAD = 4;
-const VELOCIDAD_3AM = 9;
+const VELOCIDAD = 0.02;
+const VELOCIDAD_3AM = 0.002;
 
 class Objeto extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -69,14 +69,14 @@ class Objeto extends THREE.Object3D {
   // Recibe un booleano que indica si son las 3am
   // Controla el movimiento el desplazamiento por el carril
   
-  update (am) { 
+  update (am, delta) { 
     // Calculamos el tiempo y desplazamos al objeto tanto como sea necesario
-    var time = Date.now();
-    var segundos = -(this.last_time - time) / 1000;
-    if (am) this.pos_x = this.pos_x - segundos * VELOCIDAD_3AM;
-    else this.pos_x = this.pos_x - segundos * VELOCIDAD;
+    //var time = Date.now();
+    //var segundos = -(this.last_time - time) / 1000;
+    if (am) this.pos_x = this.pos_x - (delta * VELOCIDAD_3AM);
+    else this.pos_x = this.pos_x - (delta * VELOCIDAD);
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
-    this.last_time = time;
+    //this.last_time = time;
 
   }
 
@@ -92,10 +92,11 @@ class Objeto extends THREE.Object3D {
     var cat_bound = new THREE.Box3();
 
     obj_bound.copy(this.objeto.geometry.boundingBox).applyMatrix4(this.objeto.matrixWorld );
-    cat_bound.copy(michi.getBoundingBox()).applyMatrix4(michi.matrixWorld);
-    
+    cat_bound.copy(michi.getBoundingBox()).applyMatrix4(michi.getMatrixWorld());
+
     return obj_bound.intersectsBox(cat_bound);
   }
+
 
   // ---------- Función get_annie ----------
   // Devuelve el objeto TextureAnimator
@@ -109,7 +110,15 @@ class Objeto extends THREE.Object3D {
   // Devuelve la posición en x
 
   get_pos_x(){
-    return this.pos_x;
+    return this.objeto.position.x;
+  }
+
+
+  // ---------- Función get_pos_y ----------
+  // Devuelve la posición en y
+
+  get_pos_y(){
+    return this.position.y;
   }
 
 

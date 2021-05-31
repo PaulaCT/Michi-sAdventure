@@ -2,7 +2,6 @@ import * as THREE from '../libs/three.module.js'
 import { Habilidad } from './Habilidad.js'
 import { TextureAnimator } from './michis-lib.js'
 
-var clock = new THREE.Clock();
 
 // Constantes
 const FINAL_CAMINO_H = 25;
@@ -15,7 +14,7 @@ class Gato extends THREE.Object3D {
     super();
     
     // Cargamos la textura
-    var runTexture = new THREE.TextureLoader().load('../gato/gato.png');
+    var runTexture = new THREE.TextureLoader().load('./michis-imgs/gato.png');
 
     // Le asignamos NearestFilter (por defecto asigna LinearFilter, que emborrona el pixelArt)
     runTexture.magFilter = THREE.NearestFilter;
@@ -29,7 +28,7 @@ class Gato extends THREE.Object3D {
 
     // Geometria
     //var geometria = new THREE.PlaneGeometry(1, 1, 1, 1);
-    var geometria = new THREE.BoxGeometry(1,1);
+    var geometria = new THREE.BoxGeometry(1,1,0.2);
     // Malla
     this.gato = new THREE.Mesh(geometria, material);
 
@@ -57,7 +56,15 @@ class Gato extends THREE.Object3D {
   getBoundingBox(){
     return this.gato.geometry.boundingBox;
   }
+  
 
+  // ---------- Función getMatrixWorld ----------
+  // Devuelve el matrixWordl
+
+  getMatrixWorld() {
+    return this.gato.matrixWorld;
+  }
+  
 
   // ---------- Función lanzar_habilidad ----------
   // Inicializa la habilidad
@@ -70,29 +77,38 @@ class Gato extends THREE.Object3D {
   }
 
   
-  update () {
-    var delta = clock.getDelta();
-
+  update(tiempo) {
+    
     switch(this.label){
       case 'run':
-        this.anim.animacion(0, 4);
+        this.anim.animacion(0, 4, tiempo);
+        
       break;
       case 'die':
-        this.anim.animacion(1, 5);
-      break;
-      case 'hurt':
         if (this.contador <= 5) {
-          this.anim.animacion(2, 5);
+          this.anim.animacion(1, 5, tiempo);
+          this.contador++;
           if (this.contador == 5) {
             this.label = 'run';
+            this.anim.restart();
             this.contador = 0;
           }
         }
-        this.anim.animacion(2, 5);
+      break;
+      case 'hurt':
+        if (this.contador <= 5) {
+          this.anim.animacion(2, 5, tiempo);
+          this.contador++;
+          if (this.contador == 5) {
+            this.label = 'run';
+            this.anim.restart();
+            this.contador = 0;
+          }
+        }
       break;
       case 'jump':
         if (this.contador < 8) {
-          this.anim.animacion(3, 8);
+          this.anim.animacion(3, 8, tiempo);
           this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
           this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
           this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
@@ -102,16 +118,18 @@ class Gato extends THREE.Object3D {
           if (this.contador == 8) {
             this.carril_actual = this.where;
             this.label = 'run';
+            this.anim.restart();
             this.contador = 0;
           }
         }
       break;
       case 'idle':
-        this.anim.animacion(4, 13);
+        this.anim.animacion(4, 13, tiempo);
       break;
       
     }   
     
+
     // Si se ha lanzado la habilidad
     if (this.habilidad) { 
       this.hab.update();
@@ -132,35 +150,53 @@ class Gato extends THREE.Object3D {
       if(direccion == 'up'){
         if (this.carril_actual == carril2){
           this.where = carril1;
+          this.label = 'jump';
         }
         else if (this.carril_actual == carril3){
           this.where = carril2;
+          this.label = 'jump';
         }
       }
       if(direccion == 'down') {
         if (this.carril_actual == carril1){
           this.where = carril2;
+          this.label = 'jump';
         }
         else if (this.carril_actual == carril2){
           this.where = carril3;
+          this.label = 'jump';
         }
       }
-      this.label = 'jump';
     }
   }
+
 
   // ---------- Función hurt ----------
 
   hurt() {
     if (this.label == 'jump') {
-      this.gato.position.set(this.where.x, this.where.y, this.where.z);
+      this.carril_actual = this.where;
+      this.gato.position.set(0, this.where.y, this.where.z);
       this.gato.scale.set(this.where.s, this.where.s, this.where.s);
+      this.anim.restart();
       this.contador = 0;
     }
-    this.label = 'jump';
+    this.label = 'hurt';
   }
 
 
+  // ---------- Función die ----------
+
+  die() {
+    if (this.label == 'jump') {
+      this.carril_actual = this.where;
+      this.gato.position.set(0, this.where.y, this.where.z);
+      this.gato.scale.set(this.where.s, this.where.s, this.where.s);
+      this.anim.restart();
+      this.contador = 0;
+    }
+    this.label = 'die';
+  }
 
   // ---------- Función get_habilidad ----------
   // Devuelve el booleano

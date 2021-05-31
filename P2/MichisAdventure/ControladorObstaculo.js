@@ -76,8 +76,9 @@ class ControladorObstaculo extends THREE.Object3D {
 
   // ---------- Función update ----------
   // Recibe un booleano que indique si son las 3 am y el gato
+  // También recibe las vidas restantes
 
-  update(am, gato){  
+  update(am, gato, vidas, delta){  
 
     // Iremos lanzando obstáculos cada segundo
     var time = Date.now();
@@ -124,36 +125,36 @@ class ControladorObstaculo extends THREE.Object3D {
     // Se comprueba el primer obstáculo que aún no haya llegado al gato
     // Si se ha producido colisión, ocultamos el obstáculo y lo contamos
     if (this.obstaculo1.get_visible() && this.obstaculo1.get_pos_x() >=  POS_GATO) {
-      if (this.obstaculo1.colision(gato)) {
+      if (this.obstaculo1.colision(gato, vidas)) {
         this.obstaculo1.set_visible(false);
         this.colisiones++;
       }
     } else if (this.obstaculo2.get_visible() && this.obstaculo2.get_pos_x() >= POS_GATO) {
-      if (this.obstaculo2.colision(gato)) {
+      if (this.obstaculo2.colision(gato, vidas)) {
         this.obstaculo2.set_visible(false);
         this.colisiones++;
       }
     } else if (this.obstaculo3.get_visible() && this.obstaculo3.get_pos_x() >= POS_GATO) {
-      if (this.obstaculo3.colision(gato)) {
+      if (this.obstaculo3.colision(gato, vidas)) {
         this.obstaculo3.set_visible(false);
         this.colisiones++;
       }
     } else if (this.patron % 2 == 0 && this.obstaculo4.get_visible() && this.obstaculo4.get_pos_x() >= POS_GATO) {
-      if (this.obstaculo4.colision(gato)) {
+      if (this.obstaculo4.colision(gato, vidas)) {
         this.obstaculo4.set_visible(false);
         this.colisiones++;
       }
     }
 
     // Ahora llamamos a sus respectivos métodos update
-    this.obstaculo1.update(this.primera, am);
-    this.obstaculo2.update(this.segunda, am);
+    this.obstaculo1.update(this.primera, am, delta);
+    this.obstaculo2.update(this.segunda, am, delta);
     if (this.patron % 2 == 0) {
-      this.obstaculo3.update(this.tercera, am);
-      this.obstaculo4.update(this.cuarta, am);
+      this.obstaculo3.update(this.tercera, am, delta);
+      this.obstaculo4.update(this.cuarta, am, delta);
 
     // Utilizamos el booleano del cuarto objeto para el tercero
-    } else this.obstaculo3.update(this.cuarta, am);
+    } else this.obstaculo3.update(this.cuarta, am, delta);
 
     // Detenemos a los obstaculos que han llegado al final del camino
     if (this.obstaculo1.get_pos_x() <= FINAL_CAMINO) this.obstaculo1.set_visible(false);
