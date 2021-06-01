@@ -46,7 +46,7 @@ class Moneda extends THREE.Object3D {
         if (mover) {
 
             // Movimiento: girar
-            this.annie.animacion(0, 6, delta);
+            this.annie.animacion(0, 6, delta * 1000);
             // Movimiento: botar
 
             /*
