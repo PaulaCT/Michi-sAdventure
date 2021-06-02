@@ -2,7 +2,6 @@ import * as THREE from '../libs/three.module.js'
 import { Habilidad } from './Habilidad.js'
 import { TextureAnimator } from './michis-lib.js'
 
-var clock = new THREE.Clock();
 
 // Constantes
 const FINAL_CAMINO_H = 25;
@@ -15,7 +14,7 @@ class Gato extends THREE.Object3D {
     super();
     
     // Cargamos la textura
-    var runTexture = new THREE.TextureLoader().load('../gato/gato.png');
+    var runTexture = new THREE.TextureLoader().load('./michis-imgs/gato.png');
 
     // Le asignamos NearestFilter (por defecto asigna LinearFilter, que emborrona el pixelArt)
     runTexture.magFilter = THREE.NearestFilter;
@@ -35,6 +34,7 @@ class Gato extends THREE.Object3D {
 
     // Para la colisión
     this.gato.geometry.computeBoundingBox();
+    this.inmortal = false;
 
     this.gato.position.set(0, carril2.y, carril2.z);
     this.gato.scale.set(carril2.s,carril2.s,carril2.s);
@@ -78,16 +78,15 @@ class Gato extends THREE.Object3D {
   }
 
   
-  update () {
-    var delta = clock.getDelta();
-
+  update(tiempo) {
+    
     switch(this.label){
       case 'run':
-        this.anim.animacion(0, 4);
+        this.anim.animacion(0, 3, tiempo * 1000);
       break;
       case 'die':
         if (this.contador <= 5) {
-          this.anim.animacion(1, 5);
+          this.anim.animacion(1, 4, tiempo * 1000);
           this.contador++;
           if (this.contador == 5) {
             this.label = 'run';
@@ -98,7 +97,7 @@ class Gato extends THREE.Object3D {
       break;
       case 'hurt':
         if (this.contador <= 5) {
-          this.anim.animacion(2, 5);
+          this.anim.animacion(2, 4, tiempo * 1000);
           this.contador++;
           if (this.contador == 5) {
             this.label = 'run';
@@ -109,7 +108,7 @@ class Gato extends THREE.Object3D {
       break;
       case 'jump':
         if (this.contador < 8) {
-          this.anim.animacion(3, 8);
+          this.anim.animacion(3, 7, tiempo * 1000);
           this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
           this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
           this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
@@ -125,11 +124,12 @@ class Gato extends THREE.Object3D {
         }
       break;
       case 'idle':
-        this.anim.animacion(4, 13);
+      default:
+        this.anim.animacion(4, 12, tiempo * 1000);
       break;
       
-    }   
-    
+    }
+
     // Si se ha lanzado la habilidad
     if (this.habilidad) { 
       this.hab.update();
@@ -138,8 +138,13 @@ class Gato extends THREE.Object3D {
         this.habilidad = false;
         this.hab.set_visible(false);
       }
-    
     }
+
+    // Si acaba de colisionar se vuelve inmortal durante unos segundos
+
+    if (this.inmortal && (Date.now() - this.tiempo_inmortalidad >= 1))
+      this.inmortal = false;
+
   }
 
   // ---------- Función jump ----------
@@ -198,6 +203,14 @@ class Gato extends THREE.Object3D {
     this.label = 'die';
   }
 
+  // ---------- Función set_inmortal ----------
+  // Hace que el gato no colisione si acaba de colisionar
+
+  set_inmortal() {
+    this.inmortal = true;
+    this.tiempo_inmortalidad = Date.now();
+  }
+
   // ---------- Función get_habilidad ----------
   // Devuelve el booleano
 
@@ -210,6 +223,13 @@ class Gato extends THREE.Object3D {
 
   get_hab() {
     return this.hab;
+  }
+
+  // ---------- Función get_inmortal ----------
+  // Devuelve true si el gato es inmortal
+
+  get_inmortal() {
+    return this.inmortal;
   }
 }
 

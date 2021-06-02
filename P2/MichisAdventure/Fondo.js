@@ -4,7 +4,10 @@ import * as TWEEN from '../libs/tween.esm.js'
 import { ThreeBSP } from '../libs/ThreeBSP.js'
 
 // Constantes
-const VELOCIDAD_FONDO = 0.2;
+const VELOCIDAD_FONDO = 0.002;
+const VELOCIDAD_SUELO = 0.2;
+const VELOCIDAD_CIELO = 0.4;
+const VELOCIDAD_NUBES = 0.8;
 
 class Fondo extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -64,8 +67,8 @@ class Fondo extends THREE.Object3D {
     // Posiciones
     const dia = {p:0};
     const noche = {p:0.5};
-    var loop_dia = 12000 / VELOCIDAD_FONDO;
-    var loop_noche = 10000 / VELOCIDAD_FONDO;
+    var loop_dia = 12000 / VELOCIDAD_CIELO;
+    var loop_noche = 12000 / VELOCIDAD_CIELO;
 
     var bucle_dia = new TWEEN.Tween(dia).to(noche, loop_dia).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(()=>{
         var pos = this.recorrido_sol_luna.getPointAt(dia.p);
@@ -126,7 +129,10 @@ class Fondo extends THREE.Object3D {
     // El suelo
     
     var sueloGeom = new THREE.BoxGeometry (50,20,0.2);
-    var sueloMat = new THREE.MeshPhongMaterial({color: 0x008F39});
+    var suelotexture = new THREE.TextureLoader().load('./michis-imgs/grass.png');
+    suelotexture.magFilter = THREE.NearestFilter;
+    suelotexture.wrapS = suelotexture.wrapT = THREE.RepeatWrapping; 
+    var sueloMat = new THREE.MeshPhongMaterial({map: suelotexture, transparent: true,});
     this.suelo = new THREE.Mesh (sueloGeom, sueloMat);
     this.suelo.position.y = -10;
     this.suelo.position.z = -0.2;
@@ -137,25 +143,34 @@ class Fondo extends THREE.Object3D {
     // Los carriles
 
     var carril1geom = new THREE.BoxGeometry (50,1,0.2);
-    var carril1mat = new THREE.MeshPhongMaterial({color: 0xFFFFFF});
-    var carril1mesh = new THREE.Mesh (carril1geom, carril1mat);
-    carril1mesh.position.z = 0.3;
-    carril1mesh.position.y = 3;
-    this.add(carril1mesh);
+    var carril1texture = new THREE.TextureLoader().load('./michis-imgs/dirt1.png');
+    carril1texture.magFilter = THREE.NearestFilter;
+    carril1texture.wrapS = carril1texture.wrapT = THREE.RepeatWrapping; 
+    var carril1mat = new THREE.MeshPhongMaterial({map: carril1texture});
+    this.carril1 = new THREE.Mesh (carril1geom, carril1mat);
+    this.carril1.position.z = 0.3;
+    this.carril1.position.y = 3;
+    this.add(this.carril1);
     
     var carril2geom = new THREE.BoxGeometry (50,2,0.2);
-    var carril2mat = new THREE.MeshPhongMaterial({color: 0xF29089});
-    var carril2mesh = new THREE.Mesh (carril2geom, carril2mat);
-    carril2mesh.position.z = 0.3;
-    carril2mesh.position.y = 1.5;
-    this.add(carril2mesh);
+    var carril2texture = new THREE.TextureLoader().load('./michis-imgs/dirt2.png');
+    carril2texture.magFilter = THREE.NearestFilter;
+    carril2texture.wrapS = carril2texture.wrapT = THREE.RepeatWrapping; 
+    var carril2mat = new THREE.MeshPhongMaterial({map: carril2texture});
+    this.carril2 = new THREE.Mesh (carril2geom, carril2mat);
+    this.carril2.position.z = 0.3;
+    this.carril2.position.y = 1.5;
+    this.add(this.carril2);
 
     var carril3geom = new THREE.BoxGeometry (50,3,0.2);
-    var carril3mat = new THREE.MeshPhongMaterial({color: 0x3F7A63});
-    var carril3mesh = new THREE.Mesh (carril3geom, carril3mat);
-    carril3mesh.position.z = 0.3;
-    carril3mesh.position.y = -1;
-    this.add(carril3mesh);
+    var carril3texture = new THREE.TextureLoader().load('./michis-imgs/dirt3.png');
+    carril3texture.magFilter = THREE.NearestFilter;
+    carril3texture.wrapS = carril3texture.wrapT = THREE.RepeatWrapping; 
+    var carril3mat = new THREE.MeshPhongMaterial({map: carril3texture, transparent: true,});
+    this.carril3 = new THREE.Mesh (carril3geom, carril3mat);
+    this.carril3.position.z = 0.3;
+    this.carril3.position.y = -1;
+    this.add(this.carril3);
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -188,21 +203,27 @@ class Fondo extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe la hora
   
-  update () { 
+  update (delta) { 
     // Se mueven
     //   - Las montañas se desplazan lentamente
-    this.montania_count = this.montania_count + VELOCIDAD_FONDO / 500;
-    this.montania.material.map.offset.x = this.montania_count;
+    //this.montania_count = this.montania_count + VELOCIDAD_FONDO / 500;
+    //this.montania.material.map.offset.x = this.montania_count;
+    this.montania.material.map.offset.x += VELOCIDAD_FONDO * delta;
+
+    this.suelo.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril1.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril2.material.map.offset.x += VELOCIDAD_SUELO * delta;
+    this.carril3.material.map.offset.x += VELOCIDAD_SUELO * delta;
 
     //   - Las nubes (hacia la izquierda)
-    this.nube1.position.x = this.nube1.position.x - VELOCIDAD_FONDO;
-    this.nube2.position.x = this.nube2.position.x - VELOCIDAD_FONDO;
+    this.nube1.position.x = this.nube1.position.x - (VELOCIDAD_NUBES * delta);
+    this.nube2.position.x = this.nube2.position.x - (VELOCIDAD_NUBES * delta);
     
     if (this.nube1.position.x <= -25) this.nube1.position.x = 25;
     if (this.nube2.position.x <= -25) this.nube2.position.x = 25;
 
     //   - El sol y la luna (dan vueltas) 
-    //TWEEN.update();
+    TWEEN.update();
 
   }
 }

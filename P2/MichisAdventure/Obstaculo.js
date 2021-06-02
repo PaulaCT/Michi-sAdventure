@@ -10,13 +10,18 @@ class Obstaculo extends THREE.Object3D {
     super();
 
     // "Hereda" de Object.js
-    this.obstaculo = new Objeto('./michis-imgs/cerberus.png', carril, 1, 1);
+    this.obstaculo = new Objeto('./michis-imgs/texturaRoca.png', carril, 1, 8);
 
     // Y lo añadimos como hijo del Object3D (el this)
     this.add(this.obstaculo); 
 
     // Almacenamos algunos parámetros de control
     this.invisible = false;
+    this.explosion = false;
+    this.contador = 0;
+
+    // Controlaremos la animación desde aquí
+    this.annie = this.obstaculo.get_annie();
   }
 
 
@@ -34,15 +39,26 @@ class Obstaculo extends THREE.Object3D {
   //    un booleano que indique si son las 3am
   // Controla el movimiento de explotar en caso de colisión
 
-  update(mover, am){    
+  update(mover, am, delta){    
     if (!this.invisible){
         if (mover) {
             // Aquí implementaríamos cosas para que explotara al colisionar
-            // if (explotar) { animación + this.contador_explosion++ }
+             if (this.explosion) { 
+              if (this.contador <= 8) {
+                this.annie.animacion(0, 7, delta * 1000);
+                this.contador++;
+                if (this.contador == 8) {
+                  this.explosion = false;
+                  this.contador = 0;
+                  this.set_visible(false);
+                }
+              }
+            }
             // else
 
             // Llamamos al update de Objeto.js
-            this.obstaculo.update(am);
+            this.obstaculo.update(am, delta);
+            
             // if (this.contador_explosion == 6) this.explotar = false; this.contador_explosion = 0;
         } 
     } 
@@ -60,20 +76,27 @@ class Obstaculo extends THREE.Object3D {
     if (gato.get_habilidad() && gato.hab.get_pos_y() == this.obstaculo.get_pos_y() &&
         gato.hab.get_pos_x() <= this.obstaculo.get_pos_x()) {
       if (this.obstaculo.colision(gato.get_hab())) {
-        this.set_visible(false);
         // Editar esto
         gato.habilidad = false;
         gato.hab.set_visible(false);
+
+        this.explosion = true;
       }
 
     // Si no
+    //} else if (!gato.get_inmortal()) {
     } else if (this.obstaculo.colision(gato)) {
       // Si solo le quedaba una vida, muere
       if (vidas == 1) gato.die();
-      else gato.hurt();
+      else {
+        gato.hurt();
+        this.explosion = true;
+        //gato.set_inmortal();
       //this.explotar = true; this.contador_explosión = 0;
+      }
       return true;
-    }
+     }
+    
     
     return false;
   }

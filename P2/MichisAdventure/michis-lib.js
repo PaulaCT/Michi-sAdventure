@@ -1,10 +1,9 @@
 import * as THREE from '../libs/three.module.js'
 
-function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasilla){  
+function TextureAnimator(textura, casillasH, casillasV, duracionCasilla){  
     
   this.horizontales = casillasH;
   this.verticales = casillasV;
-  this.numeroFrames = numFrames;
 
   // Hacemos que la textura se repita mediante RepeatWrapping
   textura.wrapS = textura.wrapT = THREE.RepeatWrapping; 
@@ -26,9 +25,8 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
     this.duracionActual += milliSec;
 		while (this.duracionActual > this.duracion){
 
-      // Pasamos de frame y actualizamos el tiempo de duracion
+      // Actualizamos el tiempo de duracion
 			this.duracionActual -= this.duracion;
-			this.frameActual++;
 
       // Si hemos llegado al ultimo frame volveremos al primero
 			if (this.frameActual == numFrames)
@@ -42,13 +40,17 @@ function TextureAnimator(textura, casillasH, casillasV, numFrames, duracionCasil
 
 			textura.offset.y = fila / this.verticales;
 
+      // Pasamos de frame 
+      this.frameActual++;
+
 		}
     
   };
 
   // Actualiza el frame actual
   this.restart = function(){
-    this.frameActual = this.horizontales;
+    this.frameActual = 0;
+    this.duracionActual = 0;
   };
 
   

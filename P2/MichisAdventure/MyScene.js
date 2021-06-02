@@ -167,7 +167,7 @@ class MyScene extends THREE.Scene {
     folder.add (this.guiControls, 'pause').name("Pausar ");
     
     // Se le añade un control para la intensidad de la luz
-    folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
+    //folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
     
 
     return gui;
@@ -307,15 +307,16 @@ class MyScene extends THREE.Scene {
     // El primer booleano le indica si se debe mover
     if (!this.guiControls.pause){
 
-      // El fondo variará en función de la hora (no lo necesita de momento)
-      this.fondo.update()
-
       var delta = clock.getDelta(); 
+      var tiempo = clock.elapsedTime;
+
+      // El fondo variará en función de la hora (no lo necesita de momento)
+      this.fondo.update(delta);
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
-      this.control.update(this.am, this.gato, 1000 * delta);
+      this.control.update(this.am, this.gato, delta);
 
-      this.gato.update();
+      this.gato.update(delta);
 
       // Luces
       // Amanece
@@ -372,8 +373,6 @@ class MyScene extends THREE.Scene {
         this.count_luces = 0;
       }
       this.count_luces++;
-
-      this.gato.update();
 
       // Luces
       TWEEN.update();
