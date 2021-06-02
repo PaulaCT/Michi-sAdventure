@@ -6,6 +6,8 @@ import { ThreeBSP } from '../libs/ThreeBSP.js'
 // Constantes
 const VELOCIDAD_FONDO = 0.002;
 const VELOCIDAD_SUELO = 0.2;
+const VELOCIDAD_CIELO = 0.4;
+const VELOCIDAD_NUBES = 0.8;
 
 class Fondo extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -65,8 +67,8 @@ class Fondo extends THREE.Object3D {
     // Posiciones
     const dia = {p:0};
     const noche = {p:0.5};
-    var loop_dia = 12000 / VELOCIDAD_FONDO;
-    var loop_noche = 10000 / VELOCIDAD_FONDO;
+    var loop_dia = 12000 / VELOCIDAD_CIELO;
+    var loop_noche = 12000 / VELOCIDAD_CIELO;
 
     var bucle_dia = new TWEEN.Tween(dia).to(noche, loop_dia).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(()=>{
         var pos = this.recorrido_sol_luna.getPointAt(dia.p);
@@ -214,14 +216,14 @@ class Fondo extends THREE.Object3D {
     this.carril3.material.map.offset.x += VELOCIDAD_SUELO * delta;
 
     //   - Las nubes (hacia la izquierda)
-    this.nube1.position.x = this.nube1.position.x - (VELOCIDAD_FONDO * delta);
-    this.nube2.position.x = this.nube2.position.x - (VELOCIDAD_FONDO * delta);
+    this.nube1.position.x = this.nube1.position.x - (VELOCIDAD_NUBES * delta);
+    this.nube2.position.x = this.nube2.position.x - (VELOCIDAD_NUBES * delta);
     
     if (this.nube1.position.x <= -25) this.nube1.position.x = 25;
     if (this.nube2.position.x <= -25) this.nube2.position.x = 25;
 
     //   - El sol y la luna (dan vueltas) 
-    //TWEEN.update();
+    TWEEN.update();
 
   }
 }
