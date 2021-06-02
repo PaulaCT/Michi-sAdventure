@@ -45,8 +45,7 @@ class Obstaculo extends THREE.Object3D {
             // Aquí implementaríamos cosas para que explotara al colisionar
              if (this.explosion) { 
               if (this.contador <= 8) {
-                this.annie.animacion(0, 7, delta * 1000);
-                this.contador++;
+                this.contador += this.annie.animacion(0, 7, delta * 1000);
                 if (this.contador == 8) {
                   this.explosion = false;
                   this.contador = 0;

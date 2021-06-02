@@ -86,8 +86,7 @@ class Gato extends THREE.Object3D {
       break;
       case 'die':
         if (this.contador <= 5) {
-          this.anim.animacion(1, 4, tiempo * 1000);
-          this.contador++;
+          this.contador += this.anim.animacion(1, 4, tiempo * 1000);
           if (this.contador == 5) {
             this.label = 'run';
             this.anim.restart();
@@ -97,8 +96,7 @@ class Gato extends THREE.Object3D {
       break;
       case 'hurt':
         if (this.contador <= 5) {
-          this.anim.animacion(2, 4, tiempo * 1000);
-          this.contador++;
+          this.contador += this.anim.animacion(2, 4, tiempo * 1000);
           if (this.contador == 5) {
             this.label = 'run';
             this.anim.restart();
@@ -108,13 +106,12 @@ class Gato extends THREE.Object3D {
       break;
       case 'jump':
         if (this.contador < 8) {
-          this.anim.animacion(3, 7, tiempo * 1000);
+          this.contador += this.anim.animacion(3, 7, tiempo * 1000);
           this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
           this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
           this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
           this.gato.scale.y += (this.where.s - this.carril_actual.s) / 8;
           this.gato.scale.z += (this.where.s - this.carril_actual.s) / 8;
-          this.contador++;
           if (this.contador == 8) {
             this.carril_actual = this.where;
             this.label = 'run';

@@ -43,7 +43,9 @@ function TextureAnimator(textura, casillasH, casillasV, duracionCasilla){
       // Pasamos de frame 
       this.frameActual++;
 
+      return 1;
 		}
+    return 0;
     
   };
 
