@@ -169,7 +169,7 @@ class ControladorObj extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe un booleano que indique si son las 3 am y al gato
 
-  update(am, gato, tiempo){  
+  update(am, gato, delta){  
 
     if (this.vidas == 0) {
       window.alert("Game over");
@@ -196,11 +196,11 @@ class ControladorObj extends THREE.Object3D {
     for (var i=0; i<6; i++){
       if (!this.moneda_lista[i]) {
         this.dinero = this.dinero + this.monedas[i].get_recogidas();
-        this.monedas[i].update(am,gato, tiempo);
+        this.monedas[i].update(am,gato, delta);
       } 
       if (!this.obstaculo_listo[i]) {
         this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
-        this.obstaculos[i].update(am, gato, this.vidas);
+        this.obstaculos[i].update(am, gato, this.vidas, delta);
       } 
     }
   }

@@ -2,7 +2,6 @@ import * as THREE from '../libs/three.module.js'
 import { Habilidad } from './Habilidad.js'
 import { TextureAnimator } from './michis-lib.js'
 
-var clock = new THREE.Clock();
 
 // Constantes
 const FINAL_CAMINO_H = 25;
@@ -15,7 +14,7 @@ class Gato extends THREE.Object3D {
     super();
     
     // Cargamos la textura
-    var runTexture = new THREE.TextureLoader().load('../gato/gato.png');
+    var runTexture = new THREE.TextureLoader().load('./michis-imgs/gato.png');
 
     // Le asignamos NearestFilter (por defecto asigna LinearFilter, que emborrona el pixelArt)
     runTexture.magFilter = THREE.NearestFilter;
@@ -28,7 +27,6 @@ class Gato extends THREE.Object3D {
     var material = new THREE.MeshBasicMaterial( { map: runTexture, side:THREE.DoubleSide, transparent: true } );
 
     // Geometria
-    //var geometria = new THREE.PlaneGeometry(1, 1, 1, 1);
     var geometria = new THREE.BoxGeometry(1,1,0.2);
     // Malla
     this.gato = new THREE.Mesh(geometria, material);
@@ -77,18 +75,19 @@ class Gato extends THREE.Object3D {
     this.habilidad = true;
   }
 
-  
-  update () {
-    var delta = clock.getDelta();
 
+  // ---------- Función update ----------
+  // Recibe el tiempo
+
+  update(tiempo) {
+    
     switch(this.label){
       case 'run':
-        this.anim.animacion(0, 4);
+        this.anim.animacion(0, 3, tiempo * 1000);
       break;
       case 'die':
         if (this.contador <= 5) {
-          this.anim.animacion(1, 5);
-          this.contador++;
+          this.contador += this.anim.animacion(1, 4, tiempo * 1000);
           if (this.contador == 5) {
             this.label = 'run';
             this.anim.restart();
@@ -98,8 +97,7 @@ class Gato extends THREE.Object3D {
       break;
       case 'hurt':
         if (this.contador <= 5) {
-          this.anim.animacion(2, 5);
-          this.contador++;
+          this.contador += this.anim.animacion(2, 4, tiempo * 1000);
           if (this.contador == 5) {
             this.label = 'run';
             this.anim.restart();
@@ -109,13 +107,16 @@ class Gato extends THREE.Object3D {
       break;
       case 'jump':
         if (this.contador < 8) {
-          this.anim.animacion(3, 8);
-          this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
-          this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
-          this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
-          this.gato.scale.y += (this.where.s - this.carril_actual.s) / 8;
-          this.gato.scale.z += (this.where.s - this.carril_actual.s) / 8;
-          this.contador++;
+          if (this.anim.animacion(3, 7, tiempo * 1000) == 1) {
+            this.contador++;
+            if (this.contador < 6) {
+              this.gato.position.y += (this.where.y - this.carril_actual.y) / 5;
+              this.gato.position.z += (this.where.z - this.carril_actual.z) / 5;
+              this.gato.scale.x += (this.where.s - this.carril_actual.s) / 5;
+              this.gato.scale.y += (this.where.s - this.carril_actual.s) / 5;
+              this.gato.scale.z += (this.where.s - this.carril_actual.s) / 5;
+            }
+          }
           if (this.contador == 8) {
             this.carril_actual = this.where;
             this.label = 'run';
@@ -125,11 +126,12 @@ class Gato extends THREE.Object3D {
         }
       break;
       case 'idle':
-        this.anim.animacion(4, 13);
+      default:
+        this.anim.animacion(4, 12, tiempo * 1000);
       break;
       
-    }   
-    
+    }
+
     // Si se ha lanzado la habilidad
     if (this.habilidad) { 
       this.hab.update();
@@ -138,8 +140,8 @@ class Gato extends THREE.Object3D {
         this.habilidad = false;
         this.hab.set_visible(false);
       }
-    
     }
+
   }
 
   // ---------- Función jump ----------
@@ -196,6 +198,22 @@ class Gato extends THREE.Object3D {
       this.contador = 0;
     }
     this.label = 'die';
+  }
+
+
+  // ---------- Función iddle ----------
+
+  iddle() {
+    this.label = 'iddle';
+  }
+
+
+  // ---------- Función set_habilidad ----------
+  // Desactiva o activa la habilidad
+
+  set_habilidad(valor) {
+    this.habilidad = valor;
+    this.hab.set_visible(valor);
   }
 
   // ---------- Función get_habilidad ----------

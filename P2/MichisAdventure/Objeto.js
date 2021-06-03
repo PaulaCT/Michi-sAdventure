@@ -6,8 +6,8 @@ import { Gato } from './Gato.js'
 import { Habilidad } from './Habilidad.js'
 
 // Constantes
-const VELOCIDAD = 4;
-const VELOCIDAD_3AM = 9;
+const VELOCIDAD = 10;
+const VELOCIDAD_3AM = 10;
 
 class Objeto extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -25,7 +25,7 @@ class Objeto extends THREE.Object3D {
     var texture = new THREE.TextureLoader().load(imagen);
 
     texture.magFilter = THREE.NearestFilter;
-    this.annie = new TextureAnimator(texture, columnas, filas, filas*columnas, 150);
+    this.annie = new TextureAnimator(texture, columnas, filas, 150);
 
     // Con TextureAnimator podemos crear una animación tradicional
     /*if (imagen == './michis-imgs/coin_extended.png')
@@ -69,14 +69,12 @@ class Objeto extends THREE.Object3D {
   // Recibe un booleano que indica si son las 3am
   // Controla el movimiento el desplazamiento por el carril
   
-  update (am) { 
-    // Calculamos el tiempo y desplazamos al objeto tanto como sea necesario
-    var time = Date.now();
-    var segundos = -(this.last_time - time) / 1000;
-    if (am) this.pos_x = this.pos_x - segundos * VELOCIDAD_3AM;
-    else this.pos_x = this.pos_x - segundos * VELOCIDAD;
+  update (am, delta) { 
+    // desplazamos al objeto tanto como sea necesario
+    
+    if (am) this.pos_x = this.pos_x - (delta * VELOCIDAD_3AM);
+    else this.pos_x = this.pos_x - (delta * VELOCIDAD);
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
-    this.last_time = time;
 
   }
 
@@ -118,7 +116,7 @@ class Objeto extends THREE.Object3D {
   // Devuelve la posición en y
 
   get_pos_y(){
-    return this.position.y;
+    return this.objeto.position.y;
   }
 
 
