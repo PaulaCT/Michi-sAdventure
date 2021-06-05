@@ -10,11 +10,22 @@ const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
 const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
  
 class Gato extends THREE.Object3D {
-  constructor() {
+  constructor(who) {
     super();
     
+    // Identificación del michi
+    this.who = who;
+
+    var imagen;
+    switch(who) {
+      case 0: imagen = './michis-imgs/gato.png'; break;
+      case 1: imagen = './michis-imgs/gato.png'; break;
+      case 2: imagen = './michis-imgs/gato.png'; break;
+      default: break;
+    }
+
     // Cargamos la textura
-    var runTexture = new THREE.TextureLoader().load('./michis-imgs/gato.png');
+    var runTexture = new THREE.TextureLoader().load(imagen);
 
     // Le asignamos NearestFilter (por defecto asigna LinearFilter, que emborrona el pixelArt)
     runTexture.magFilter = THREE.NearestFilter;
@@ -52,13 +63,27 @@ class Gato extends THREE.Object3D {
   }
 
 
+  // ---------- Función restart ----------
+  // Devuelve al gato a sus valores iniciales
+
+  restart() {
+    this.gato.position.set(0, carril2.y, carril2.z);
+    this.gato.scale.set(carril2.s,carril2.s,carril2.s);
+    this.label = 'run';
+    this.contador = 0;
+    this.carril_actual = carril2;
+    this.habilidad = false;
+    this.visible = true;
+  }
+
+
   getBoundingBox(){
     return this.gato.geometry.boundingBox;
   }
   
 
   // ---------- Función getMatrixWorld ----------
-  // Devuelve el matrixWordl
+  // Devuelve el matrixWorld
 
   getMatrixWorld() {
     return this.gato.matrixWorld;
@@ -171,6 +196,36 @@ class Gato extends THREE.Object3D {
       }
     }
   }
+
+
+  // ---------- Función big_jump ----------
+  // Inicia el movimiento de saltar largo si es posible
+
+  big_jump(direccion) {
+    if (this.label == 'run') {
+      if(direccion == 'up'){
+        if (this.carril_actual == carril2){
+          this.where = carril1;
+          this.label = 'jump';
+        }
+        else if (this.carril_actual == carril3){
+          this.where = carril1;
+          this.label = 'jump';
+        }
+      }
+      if(direccion == 'down') {
+        if (this.carril_actual == carril1){
+          this.where = carril3;
+          this.label = 'jump';
+        }
+        else if (this.carril_actual == carril2){
+          this.where = carril3;
+          this.label = 'jump';
+        }
+      }
+    }
+  }
+
 
 
   // ---------- Función hurt ----------
