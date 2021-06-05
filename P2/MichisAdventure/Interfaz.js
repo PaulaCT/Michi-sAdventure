@@ -25,13 +25,14 @@ class Interfaz extends THREE.Object3D {
     this.vidas = new THREE.Mesh(geometria, material);
 
 
-    this.vidas.position.set(32, 5, 2);
+    this.vidas.position.set(32, 8, 2);
     this.vidas.scale.set(1.5, 1.5, 1.5);
 
     this.contador = new ContadorMonedas();
+    this.contador.position.set(26, 5, 2);
+
+
     this.add(this.contador)
-
-
     this.add(this.vidas);  
     
   }

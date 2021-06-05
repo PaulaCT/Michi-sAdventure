@@ -45,12 +45,11 @@ class ContadorMonedas extends THREE.Object3D {
     this.decena = new THREE.Mesh(geometriaNum, materialDecena);
     this.centena = new THREE.Mesh(geometriaNum, materialCentena);
 
-    this.texto.position.set(28, 0, 2);
-    this.texto.scale.set(1.5, 1.5, 1.5);
-
-    this.unidad.position.set(35, 0, 2);
-    this.decena.position.set(34, 0, 2);
-    this.centena.position.set(33, 0, 2);
+    
+    this.texto.position.set(0, 0, 2);
+    this.unidad.position.set(6, 0, 2);
+    this.decena.position.set(5, 0, 2);
+    this.centena.position.set(4, 0, 2);
 
     this.add(this.texto);
     this.add(this.unidad);
