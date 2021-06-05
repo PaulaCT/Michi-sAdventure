@@ -12,6 +12,7 @@ import { MenuPrincipal } from './MenuPrincipal.js'
 import { ControladorObj } from './ControladorObj.js'
 import { Fondo } from './Fondo.js'
 import { Gato } from './Gato.js'
+import { Interfaz } from './Interfaz.js'
 
 /// La clase fachada del modelo
 /**
@@ -53,7 +54,6 @@ class MyScene extends THREE.Scene {
     this.gui = this.createGUI ();
     
     // Construimos los distinos elementos que tendremos en la escena
-
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
 
@@ -119,6 +119,14 @@ class MyScene extends THREE.Scene {
 
     // 5. Algunos controles extras
 
+    // Interfaz
+    this.interfaz = new Interfaz();
+    this.add(this.interfaz);
+
+    // Para la habilidad del Michi añadimos un tiempo de enfriamiento
+    // El tiempo será falso para que empiece con la habilidad cargada
+    this.enfriamiento = 1000;
+
     this.last_time = Date.now();
     this.am = false;
     
@@ -131,6 +139,7 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     //this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     this.camera = new THREE.OrthographicCamera( window.innerWidth / - 30, window.innerWidth / 30, window.innerHeight / 30, window.innerHeight / - 30, 1, 1000 );
+
     // También se indica dónde se coloca
     //this.camera.position.set (0, 0, 10);
     this.camera.position.set (500, 0, 10);
@@ -380,7 +389,6 @@ class MyScene extends THREE.Scene {
       } else this.michis[i].visible = false;
     }
   }
-
 
   update () {
     

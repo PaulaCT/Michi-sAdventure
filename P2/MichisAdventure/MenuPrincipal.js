@@ -55,6 +55,7 @@ class MenuPrincipal extends THREE.Object3D {
     var boton_textura = new THREE.TextureLoader().load('./michis-imgs/start.png');
     boton_textura.magFilter = THREE.NearestFilter;
     var boton_mat = new THREE.MeshPhongMaterial({map: boton_textura, transparent: true });
+
     this.boton = new THREE.Mesh (boton_geom, boton_mat);
     this.add(this.boton);
 
@@ -98,6 +99,7 @@ class MenuPrincipal extends THREE.Object3D {
     } else if (direccion == 'left') {
         switch(this.michi_afortunado) {
             case 2: 
+
                 //this.suerte.position.x += DESPLAZAMIENTO;
                 this.suerte.scale.set(ESCALA, ESCALA, ESCALA);
                 //this.gato.position.x += DESPLAZAMIENTO;
