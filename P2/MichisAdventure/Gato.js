@@ -33,6 +33,7 @@ class Gato extends THREE.Object3D {
 
     // Para la colisión
     this.gato.geometry.computeBoundingBox();
+    this.inmortal = false;
 
     this.gato.position.set(0, carril2.y, carril2.z);
     this.gato.scale.set(carril2.s,carril2.s,carril2.s);
@@ -56,9 +57,9 @@ class Gato extends THREE.Object3D {
     return this.gato.geometry.boundingBox;
   }
   
-
+  
   // ---------- Función getMatrixWorld ----------
-  // Devuelve el matrixWordl
+  // Devuelve el matrixWorld
 
   getMatrixWorld() {
     return this.gato.matrixWorld;
@@ -141,7 +142,6 @@ class Gato extends THREE.Object3D {
         this.hab.set_visible(false);
       }
     }
-
   }
 
   // ---------- Función jump ----------
@@ -199,7 +199,7 @@ class Gato extends THREE.Object3D {
     }
     this.label = 'die';
   }
-
+  
 
   // ---------- Función iddle ----------
 
@@ -214,6 +214,7 @@ class Gato extends THREE.Object3D {
   set_habilidad(valor) {
     this.habilidad = valor;
     this.hab.set_visible(valor);
+
   }
 
   // ---------- Función get_habilidad ----------
@@ -228,6 +229,13 @@ class Gato extends THREE.Object3D {
 
   get_hab() {
     return this.hab;
+  }
+
+  // ---------- Función get_inmortal ----------
+  // Devuelve true si el gato es inmortal
+
+  get_inmortal() {
+    return this.inmortal;
   }
 }
 

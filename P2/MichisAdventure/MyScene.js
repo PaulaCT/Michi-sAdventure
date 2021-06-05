@@ -120,6 +120,7 @@ class MyScene extends THREE.Scene {
     anochece.chain(noche);
     noche.chain(amanece);
     amanece.chain(manianita);
+
     
     // Creamos el suelo y el fondo
     this.fondo = new Fondo();
@@ -339,9 +340,6 @@ class MyScene extends THREE.Scene {
         case 83: ; break;
     }
   }*/
-
-
-
 
   update () {
     

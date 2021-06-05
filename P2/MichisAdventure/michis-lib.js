@@ -54,6 +54,12 @@ function TextureAnimator(textura, casillasH, casillasV, duracionCasilla){
     this.duracionActual = 0;
   };
 
+  // Actualiza el frame actual
+  this.restart = function(){
+    this.frameActual = 0;
+    this.duracionActual = 0;
+  };
+
   
 
 }
