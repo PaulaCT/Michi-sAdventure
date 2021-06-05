@@ -348,10 +348,12 @@ class MyScene extends THREE.Scene {
         // q
         case 81: this.jugando = this.menu.start();
           this.configurarMichis();
-          this.camera.position.set(0, 0, 10);
-          var look = new THREE.Vector3 (0,0,0);
+          this.camera.position.set(0, 5, 10);
+          var look = new THREE.Vector3 (0, 5, 0);
           this.camera.lookAt(look);
           this.cameraControl.target = look;
+          this.camera.zoom = 1.3;
+          this.camera.updateProjectionMatrix();
           this.guiControls.pause = false;
           break;
         default: break;
