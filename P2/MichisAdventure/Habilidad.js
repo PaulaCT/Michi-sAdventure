@@ -25,6 +25,7 @@ class Habilidad extends THREE.Object3D {
     // Al principio nos da igual dónde esté (hasta que se lance)
     this.hab.position.x = 0;
     this.pos_x = 0;
+    this.pos_y = 0;
 
     this.add(this.hab);
     
@@ -45,6 +46,7 @@ class Habilidad extends THREE.Object3D {
     // objeto en la posición adecuada
     this.hab.position.set(0, carril.y, carril.z);
     this.pos_x = 0;
+    this.pos_y = carril.y;
     this.hab.scale.set(carril.s, carril.s, carril.s);
     this.last_time = Date.now();
     this.set_visible(true);
@@ -105,7 +107,7 @@ class Habilidad extends THREE.Object3D {
   // Devuelve la posición en y
 
   get_pos_y(){
-    return this.position.y;
+    return this.pos_y;
   }
 }
 

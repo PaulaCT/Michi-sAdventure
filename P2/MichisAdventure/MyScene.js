@@ -8,9 +8,11 @@ import * as TWEEN from '../libs/tween.esm.js'
 
 // Clases de mi proyecto
 
+import { MenuPrincipal } from './MenuPrincipal.js'
 import { ControladorObj } from './ControladorObj.js'
 import { Fondo } from './Fondo.js'
 import { Gato } from './Gato.js'
+import { Interfaz } from './Interfaz.js'
 
 /// La clase fachada del modelo
 /**
@@ -52,6 +54,25 @@ class MyScene extends THREE.Scene {
     this.gui = this.createGUI ();
     
     // Construimos los distinos elementos que tendremos en la escena
+
+    // Tendremos una cámara con un control de movimiento con el ratón
+    this.createCamera ();
+
+    // 1. Eje del menú principal
+    this.axis = new THREE.AxesHelper(5);
+    this.axis.position.set(500,0,0);
+    this.add(this.axis);
+
+    // 2. Luces del menú principal
+
+    // 3. Menú principal
+    this.menu = new MenuPrincipal();
+    this.axis.add(this.menu);
+
+    // 4. Control del botón del menú principal
+
+
+    // El resto de elementos podemos ponerlos en una función?
     
     // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
     // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
@@ -100,8 +121,6 @@ class MyScene extends THREE.Scene {
     noche.chain(amanece);
     amanece.chain(manianita);
 
-    // Tendremos una cámara con un control de movimiento con el ratón
-    this.createCamera ();
     
     // Creamos el suelo y el fondo
     this.fondo = new Fondo();
@@ -116,6 +135,14 @@ class MyScene extends THREE.Scene {
     this.gato = new Gato();
     this.add(this.gato);
 
+    // Interfaz
+    this.interfaz = new Interfaz();
+    this.add(this.interfaz);
+
+    // Para la habilidad del Michi añadimos un tiempo de enfriamiento
+    // El tiempo será falso para que empiece con la habilidad cargada
+    this.enfriamiento = 1000;
+
     this.last_time = Date.now();
     this.am = false;
     
@@ -128,10 +155,12 @@ class MyScene extends THREE.Scene {
     //   Los planos de recorte cercano y lejano
     //this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
     this.camera = new THREE.OrthographicCamera( window.innerWidth / - 30, window.innerWidth / 30, window.innerHeight / 30, window.innerHeight / - 30, 1, 1000 );
+
     // También se indica dónde se coloca
-    this.camera.position.set (0, 0, 10);
+    //this.camera.position.set (0, 0, 10);
+    this.camera.position.set (500, 0, 10);
     // Y hacia dónde mira
-    var look = new THREE.Vector3 (0,0,0);
+    var look = new THREE.Vector3 (500,0,0);
     this.camera.lookAt(look);
     this.add (this.camera);
     
@@ -157,7 +186,7 @@ class MyScene extends THREE.Scene {
       this.lightIntensity = 0.5;
       this.axisOnOff = true;
       this.animate = false;
-      this.pause = false;
+      this.pause = true;
     }
 
     // Se crea una sección para los controles de esta clase
@@ -271,7 +300,33 @@ class MyScene extends THREE.Scene {
         // Down
         case 40: this.gato.jump('down'); break;
         //Space
-        case 32: this.gato.lanzar_habilidad(); break;
+        case 32: var actual = Date.now();
+        if ((-(this.enfriamiento - actual) / 1000) > 10) {
+          this.gato.lanzar_habilidad();
+          this.enfriamiento = actual;
+        } else console.log ("No puedes hacer eso"); break;
+        // Para el menú principal
+        // Left
+        case 37: this.menu.cambiarGatito('left'); break;
+        // Right
+        case 39: this.menu.cambiarGatito('right'); break;
+        // Cambiar
+        // q
+        case 81: var michi = this.menu.start();
+          switch (michi) {
+            case 'gato': break;//this.gato = this.gato_gato; break;
+            //case 'caracal': this.gato = this.gato_caracal; break;
+            //case 'chino': this.gato = this.gato_suerte; break;
+            default: break;
+          }
+          this.camera.position.set(0, 5, 10);
+          var look = new THREE.Vector3 (0, 5, 0);
+          this.camera.lookAt(look);
+          this.cameraControl.target = look;
+          this.camera.zoom = 1.3;
+          this.camera.updateProjectionMatrix();
+          this.guiControls.pause = false;
+          break;
         default: break;
     }
   }
@@ -286,12 +341,12 @@ class MyScene extends THREE.Scene {
     }
   }*/
 
-
   update () {
     
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
-    
+
+
     // Se actualiza el resto del modelo, le pasamos el tiempo
     var time = Date.now();
     var segundos = -(this.last_time - time) / 1000;
@@ -304,8 +359,11 @@ class MyScene extends THREE.Scene {
         this.last_time = time;
     }
 
-    // El primer booleano le indica si se debe mover
-    if (!this.guiControls.pause){
+    if (this.guiControls.pause) {
+      var delta_prueba = clock.getDelta();
+      this.menu.update(delta_prueba); 
+      
+    } else {
 
       var delta = clock.getDelta(); 
       var tiempo = clock.elapsedTime;
@@ -403,6 +461,7 @@ $(function () {
   window.addEventListener ("resize", () => scene.onWindowResize());
   window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
   //window.addEventListener("keyup" (event) => scene.onKeyUp(event), true);
+  window.addEventListener("onclick", (event) => scene.onClick(event), true);
   
   // Que no se nos olvide, la primera visualización.
   scene.update();

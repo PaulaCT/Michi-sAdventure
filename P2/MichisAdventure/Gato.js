@@ -27,7 +27,6 @@ class Gato extends THREE.Object3D {
     var material = new THREE.MeshBasicMaterial( { map: runTexture, side:THREE.DoubleSide, transparent: true } );
 
     // Geometria
-    //var geometria = new THREE.PlaneGeometry(1, 1, 1, 1);
     var geometria = new THREE.BoxGeometry(1,1,0.2);
     // Malla
     this.gato = new THREE.Mesh(geometria, material);
@@ -58,9 +57,9 @@ class Gato extends THREE.Object3D {
     return this.gato.geometry.boundingBox;
   }
   
-
+  
   // ---------- Función getMatrixWorld ----------
-  // Devuelve el matrixWordl
+  // Devuelve el matrixWorld
 
   getMatrixWorld() {
     return this.gato.matrixWorld;
@@ -77,7 +76,10 @@ class Gato extends THREE.Object3D {
     this.habilidad = true;
   }
 
-  
+
+  // ---------- Función update ----------
+  // Recibe el tiempo
+
   update(tiempo) {
     
     switch(this.label){
@@ -106,12 +108,16 @@ class Gato extends THREE.Object3D {
       break;
       case 'jump':
         if (this.contador < 8) {
-          this.contador += this.anim.animacion(3, 7, tiempo * 1000);
-          this.gato.position.y += (this.where.y - this.carril_actual.y) / 8;
-          this.gato.position.z += (this.where.z - this.carril_actual.z) / 8;
-          this.gato.scale.x += (this.where.s - this.carril_actual.s) / 8;
-          this.gato.scale.y += (this.where.s - this.carril_actual.s) / 8;
-          this.gato.scale.z += (this.where.s - this.carril_actual.s) / 8;
+          if (this.anim.animacion(3, 7, tiempo * 1000) == 1) {
+            this.contador++;
+            if (this.contador < 6) {
+              this.gato.position.y += (this.where.y - this.carril_actual.y) / 5;
+              this.gato.position.z += (this.where.z - this.carril_actual.z) / 5;
+              this.gato.scale.x += (this.where.s - this.carril_actual.s) / 5;
+              this.gato.scale.y += (this.where.s - this.carril_actual.s) / 5;
+              this.gato.scale.z += (this.where.s - this.carril_actual.s) / 5;
+            }
+          }
           if (this.contador == 8) {
             this.carril_actual = this.where;
             this.label = 'run';
@@ -136,12 +142,6 @@ class Gato extends THREE.Object3D {
         this.hab.set_visible(false);
       }
     }
-
-    // Si acaba de colisionar se vuelve inmortal durante unos segundos
-
-    if (this.inmortal && (Date.now() - this.tiempo_inmortalidad >= 1))
-      this.inmortal = false;
-
   }
 
   // ---------- Función jump ----------
@@ -199,13 +199,22 @@ class Gato extends THREE.Object3D {
     }
     this.label = 'die';
   }
+  
 
-  // ---------- Función set_inmortal ----------
-  // Hace que el gato no colisione si acaba de colisionar
+  // ---------- Función iddle ----------
 
-  set_inmortal() {
-    this.inmortal = true;
-    this.tiempo_inmortalidad = Date.now();
+  iddle() {
+    this.label = 'iddle';
+  }
+
+
+  // ---------- Función set_habilidad ----------
+  // Desactiva o activa la habilidad
+
+  set_habilidad(valor) {
+    this.habilidad = valor;
+    this.hab.set_visible(valor);
+
   }
 
   // ---------- Función get_habilidad ----------

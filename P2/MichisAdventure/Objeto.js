@@ -116,7 +116,7 @@ class Objeto extends THREE.Object3D {
   // Devuelve la posición en y
 
   get_pos_y(){
-    return this.position.y;
+    return this.objeto.position.y;
   }
 
 
