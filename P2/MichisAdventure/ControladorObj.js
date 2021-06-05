@@ -171,7 +171,7 @@ class ControladorObj extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe un booleano que indique si son las 3 am y al gato
 
-  update(am, gato, delta){  
+  update(am, gato, delta, interfaz){  
 
     if (this.vidas == 0) {
       window.alert("Game over");
@@ -194,6 +194,9 @@ class ControladorObj extends THREE.Object3D {
       else this.aleatoria(SUERTE);
       this.inicio_movimiento = time;
     }
+
+    //Actualizamos interfaz
+    interfaz.update(this.vidas, this.dinero);
 
     // Llamamos al update de todos los controladores que hayan sido lanzados 
     // y hacemos recuento de las colisiones

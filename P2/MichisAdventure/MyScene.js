@@ -421,7 +421,7 @@ class MyScene extends THREE.Scene {
       this.fondo.update(delta);
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
-      this.guiControls.pause = this.control.update(this.am, this.michis[this.jugando], delta);
+      this.guiControls.pause = this.control.update(this.am, this.michis[this.jugando], delta, this.interfaz);
       if (this.guiControls.pause) this.irAMenu();
 
       this.michis[this.jugando].update(delta);
