@@ -25,7 +25,7 @@ class Objeto extends THREE.Object3D {
     var texture = new THREE.TextureLoader().load(imagen);
 
     texture.magFilter = THREE.NearestFilter;
-    this.annie = new TextureAnimator(texture, columnas, filas, filas*columnas, 150);
+    this.annie = new TextureAnimator(texture, columnas, filas, 150);
 
     // Con TextureAnimator podemos crear una animación tradicional
     /*if (imagen == './michis-imgs/coin_extended.png')
@@ -116,7 +116,7 @@ class Objeto extends THREE.Object3D {
   // Devuelve la posición en y
 
   get_pos_y(){
-    return this.position.y;
+    return this.objeto.position.y;
   }
 
 

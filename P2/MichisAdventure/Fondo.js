@@ -177,7 +177,8 @@ class Fondo extends THREE.Object3D {
     // La caja límite
 
     this.limite = this.create_caja();
-    var texture_limite = new THREE.TextureLoader().load('./michis-imgs/stars-ini.jpg');
+    var texture_limite = new THREE.TextureLoader().load('./michis-imgs/marco.png');
+    texture_limite.magFilter = THREE.NearestFilter;
     this.limite.material = new THREE.MeshPhongMaterial({map: texture_limite});
     this.add(this.limite);
   }
@@ -187,10 +188,10 @@ class Fondo extends THREE.Object3D {
 
   create_caja() {
     var caja_ext = new THREE.BoxGeometry(200, 200, 0.2);
-    var caja_int = new THREE.BoxGeometry(47, 47, 0.2);
+    var caja_int = new THREE.BoxGeometry(40, 40, 0.2);
     
-    caja_ext.translate(0,0,1.4);
-    caja_int.translate(0,5,1.4);  
+    caja_ext.translate(0 , 0 , 1.4);
+    caja_int.translate(0 , 5 , 1.4);  
 
     var caja_extBSP = new ThreeBSP(caja_ext);
     var caja_intBSP = new ThreeBSP(caja_int);
