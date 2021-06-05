@@ -8,6 +8,11 @@ const DESPLAZAMIENTO = 14;
 const ESCALA_SELECT = 7;
 const ESCALA = 5;
 
+// CÓDIGOS
+//   gato : 0
+//   caracal : 1
+//   chino : 2
+
 class MenuPrincipal extends THREE.Object3D {
   // ---------- Constructor ----------
   
@@ -17,9 +22,9 @@ class MenuPrincipal extends THREE.Object3D {
     // Elige a tu personaje
     
     // Añadimos a los gatitos
-    this.gato = new Gato(); //Pasarle imagen gato
-    this.caracal = new Gato();//'./michis-imgs/caracal.png');
-    this.suerte = new Gato();//'./michis-imgs/suerte.png');
+    this.gato = new Gato(0); //Pasarle imagen gato
+    this.caracal = new Gato(1);//'./michis-imgs/caracal.png');
+    this.suerte = new Gato(2);//'./michis-imgs/suerte.png');
 
     this.add(this.gato);
     this.add(this.caracal);
@@ -36,7 +41,7 @@ class MenuPrincipal extends THREE.Object3D {
     this.suerte.scale.set(ESCALA, ESCALA, ESCALA);
     this.suerte.iddle();
 
-    this.michi_afortunado = 'gato';
+    this.michi_afortunado = 0;
 
     // Fondo
     var fondo_geom = new THREE.BoxGeometry(200, 200, 0.2);
@@ -46,9 +51,11 @@ class MenuPrincipal extends THREE.Object3D {
     this.add(this.fondo);
 
     // Botón
-    var boton_geom = new THREE.BoxGeometry(8, 6, 1);
-    var boton_textura = new THREE.TextureLoader().load('./michis-imgs/yoquese.jpg');
-    var boton_mat = new THREE.MeshPhongMaterial({map: boton_textura});
+    var boton_geom = new THREE.BoxGeometry(8, 5, 1);
+    var boton_textura = new THREE.TextureLoader().load('./michis-imgs/start.png');
+    boton_textura.magFilter = THREE.NearestFilter;
+    var boton_mat = new THREE.MeshPhongMaterial({map: boton_textura, transparent: true });
+
     this.boton = new THREE.Mesh (boton_geom, boton_mat);
     this.add(this.boton);
 
@@ -71,41 +78,42 @@ class MenuPrincipal extends THREE.Object3D {
   cambiarGatito (direccion) {
     if (direccion == 'right') {
         switch(this.michi_afortunado) {
-            case 'gato': 
+            case 0: 
                 //this.suerte.position.x -= DESPLAZAMIENTO;
                 this.suerte.scale.set(ESCALA_SELECT, ESCALA_SELECT, ESCALA_SELECT);
                 //this.gato.position.x -= DESPLAZAMIENTO;
                 this.gato.scale.set(ESCALA, ESCALA, ESCALA);
                 //this.caracal.position.x -= DESPLAZAMIENTO;
-                this.michi_afortunado = 'chino';
+                this.michi_afortunado = 2;
                 break;
-            case 'caracal':
+            case 1:
                 //this.suerte.position.x -= DESPLAZAMIENTO;
                 //this.gato.position.x -= DESPLAZAMIENTO;
                 this.gato.scale.set(ESCALA_SELECT, ESCALA_SELECT, ESCALA_SELECT);
                 //this.caracal.position.x -= DESPLAZAMIENTO;
                 this.caracal.scale.set(ESCALA, ESCALA, ESCALA);
-                this.michi_afortunado = 'gato';
+                this.michi_afortunado = 0;
                 break;
             default: break;  
         }
     } else if (direccion == 'left') {
         switch(this.michi_afortunado) {
-            case 'chino': 
+            case 2: 
+
                 //this.suerte.position.x += DESPLAZAMIENTO;
                 this.suerte.scale.set(ESCALA, ESCALA, ESCALA);
                 //this.gato.position.x += DESPLAZAMIENTO;
                 this.gato.scale.set(ESCALA_SELECT, ESCALA_SELECT, ESCALA_SELECT);
                 //this.caracal.position.x += DESPLAZAMIENTO;
-                this.michi_afortunado = 'gato';
+                this.michi_afortunado = 0;
                 break;
-            case 'gato':
+            case 0:
                 //this.suerte.position.x += DESPLAZAMIENTO;
                 //this.gato.position.x += DESPLAZAMIENTO;
                 this.gato.scale.set(ESCALA, ESCALA, ESCALA);
                 //this.caracal.position.x += DESPLAZAMIENTO;
                 this.caracal.scale.set(ESCALA_SELECT, ESCALA_SELECT, ESCALA_SELECT);
-                this.michi_afortunado = 'caracal';
+                this.michi_afortunado = 1;
                 break;
             default: break;  
         }

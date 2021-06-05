@@ -54,7 +54,6 @@ class MyScene extends THREE.Scene {
     this.gui = this.createGUI ();
     
     // Construimos los distinos elementos que tendremos en la escena
-
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
 
@@ -64,76 +63,61 @@ class MyScene extends THREE.Scene {
     this.add(this.axis);
 
     // 2. Luces del menú principal
+    this.luz_menu = new THREE.SpotLight(0xF9CEF3, 1);
+    this.luz_menu.position.set(600, 60, 100);
+    this.objetivo_menu = new THREE.Object3D();
+    this.objetivo_menu.position.set(500, 30, 0);
+    this.luz_menu.target = this.objetivo_menu;
+    this.add(this.luz_menu);
+
 
     // 3. Menú principal
     this.menu = new MenuPrincipal();
     this.axis.add(this.menu);
 
     // 4. Control del botón del menú principal
+    // TO DO 
 
+    // Ahora construimos el resto del juego
 
-    // El resto de elementos podemos ponerlos en una función?
-    
-    // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
-    // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
+    // 1. Luces y sus animaciones
+
     this.createLights ();
-        // Y sus animaciones
-    var that = this;
-    var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
-      that.luz_1.intensity = l0.a;
-    }).onComplete(function(){
-      l0 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
-    });
-    var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
-      that.luz_1.intensity = l1.a;
-      that.luz_2.intensity = l1.b;
-    }).onComplete(function(){
-      l1 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
-    });
-    var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
-      that.luz_2.intensity = l2.b;
-      that.luz_3.intensity = l2.c;
-    }).onComplete(function(){
-      l2 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
-    });
-    var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
-      that.luz_3.intensity = l3.c;
-      that.luz_4.intensity = l3.d;
-    }).onComplete(function(){
-      l3 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
-    });
-    var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
-      that.luz_4.intensity = l4.d;
-      that.luz_5.intensity = l4.e;
-    }).onComplete(function(){
-      l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
-    });
-    var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 5).onUpdate(function() {
-      that.luz_5.intensity = l5.e;
-    }).onComplete(function(){
-      l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
-    });
-    
-    manianita.start().chain(pleno_dia);
-    pleno_dia.chain(atardece);
-    atardece.chain(anochece);
-    anochece.chain(noche);
-    noche.chain(amanece);
-    amanece.chain(manianita);
 
-    
-    // Creamos el suelo y el fondo
+    // 2. Añadimos el mundo (suelo, fondo)
+
     this.fondo = new Fondo();
     this.add(this.fondo);
 
-    // Añadimos un controlador de objetos
+    // 3. Añadimos un controlador de objetos
+
     this.control = new ControladorObj(carril1, carril2, carril3);
     this.add(this.control);
 
-    // Aquí irá el michi cuando se cree supongo
+    // 4. Añadimos a los michis
 
-    this.gato = new Gato();
+    // Añadir texturas !!!!!!
+    this.gato = new Gato(0);
+    this.caracal = new Gato(1);
+    this.chino = new Gato(2);
+
     this.add(this.gato);
+    this.add(this.caracal);
+    this.add(this.chino);
+
+    this.michis = [this.gato, this.caracal, this.chino];
+
+    // El gato seleccionado en el menú principal será el que juegue
+    this.jugando = 0;
+
+    // Para la habilidad del Michi añadimos un tiempo de enfriamiento
+    // El tiempo será falso para que empiece con la habilidad cargada
+    this.enfriamiento = 1000;
+
+    // El caracal puede saltar mucho, tendremos un tiempo para gestionarlo
+    this.inicio_salto = 0;
+
+    // 5. Algunos controles extras
 
     // Interfaz
     this.interfaz = new Interfaz();
@@ -249,6 +233,54 @@ class MyScene extends THREE.Scene {
     this.add(this.luz_5);
     this.add(this.objetivo);
 
+    // Las animamos
+    this.animateLights();
+
+  }
+
+  animateLights () {
+      var that = this;
+      var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
+        that.luz_1.intensity = l0.a;
+      }).onComplete(function(){
+        l0 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
+      });
+      var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
+        that.luz_1.intensity = l1.a;
+        that.luz_2.intensity = l1.b;
+      }).onComplete(function(){
+        l1 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
+      });
+      var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
+        that.luz_2.intensity = l2.b;
+        that.luz_3.intensity = l2.c;
+      }).onComplete(function(){
+        l2 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
+      });
+      var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
+        that.luz_3.intensity = l3.c;
+        that.luz_4.intensity = l3.d;
+      }).onComplete(function(){
+        l3 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
+      });
+      var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
+        that.luz_4.intensity = l4.d;
+        that.luz_5.intensity = l4.e;
+      }).onComplete(function(){
+        l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
+      });
+      var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 5).onUpdate(function() {
+        that.luz_5.intensity = l5.e;
+      }).onComplete(function(){
+        l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
+      });
+      
+      manianita.start().chain(pleno_dia);
+      pleno_dia.chain(atardece);
+      atardece.chain(anochece);
+      anochece.chain(noche);
+      noche.chain(amanece);
+      amanece.chain(manianita);
   }
   
   createRenderer (myCanvas) {
@@ -296,13 +328,15 @@ class MyScene extends THREE.Scene {
     var keyCode = event.which;
     switch(keyCode) {
         // Up
-        case 38: this.gato.jump('up'); break;
+        case 38: if (this.jugando == 1) this.inicio_salto = Date.now();
+          else this.michis[this.jugando].jump('up'); break;
         // Down
-        case 40: this.gato.jump('down'); break;
+        case 40: if (this.jugando == 1) this.inicio_salto = Date.now();
+          else this.michis[this.jugando].jump('down'); break;
         //Space
         case 32: var actual = Date.now();
         if ((-(this.enfriamiento - actual) / 1000) > 10) {
-          this.gato.lanzar_habilidad();
+          this.michis[this.jugando].lanzar_habilidad();
           this.enfriamiento = actual;
         } else console.log ("No puedes hacer eso"); break;
         // Para el menú principal
@@ -310,21 +344,14 @@ class MyScene extends THREE.Scene {
         case 37: this.menu.cambiarGatito('left'); break;
         // Right
         case 39: this.menu.cambiarGatito('right'); break;
-        // Cambiar
+        // Cambiar!!!!
         // q
-        case 81: var michi = this.menu.start();
-          switch (michi) {
-            case 'gato': break;//this.gato = this.gato_gato; break;
-            //case 'caracal': this.gato = this.gato_caracal; break;
-            //case 'chino': this.gato = this.gato_suerte; break;
-            default: break;
-          }
-          this.camera.position.set(0, 5, 10);
-          var look = new THREE.Vector3 (0, 5, 0);
+        case 81: this.jugando = this.menu.start();
+          this.configurarMichis();
+          this.camera.position.set(0, 0, 10);
+          var look = new THREE.Vector3 (0,0,0);
           this.camera.lookAt(look);
           this.cameraControl.target = look;
-          this.camera.zoom = 1.3;
-          this.camera.updateProjectionMatrix();
           this.guiControls.pause = false;
           break;
         default: break;
@@ -332,14 +359,36 @@ class MyScene extends THREE.Scene {
   }
 
   // Si añadimos al caracal habría que contar esto
-  /*onKeyUp (event) {
-    switch(x) {
+  onKeyUp (event) {
+    var keyCode = event.which;
+    switch(keyCode) {
         // Up
-        case 87: ; break;
+        case 38: if ((this.inicio_salto - Date.now()) / 1000 < 0.5) {
+            if (this.jugando == 1) this.michis[this.jugando].jump('up');
+          } else if (this.jugando == 1) this.michis[this.jugando].big_jump('up');
+          break;
         // Down
-        case 83: ; break;
+        case 40: if ((this.inicio_salto - Date.now()) / 1000 < 0.1) {
+            if (this.jugando == 1) this.michis[this.jugando].jump('down');
+          } else if (this.jugando == 1) this.michis[this.jugando].big_jump('down');
+          this.inicio_salto = 0; break;
     }
-  }*/
+  }
+
+  irAMenu(){
+    this.camera.position.set(500, 0, 10);
+    var look = new THREE.Vector3 (500,0,0);
+    this.camera.lookAt(look);
+    this.cameraControl.target = look;
+  }
+
+  configurarMichis() {
+    for (var i = 0; i < 3; i++) {
+      if (i == this.jugando) {
+        this.michis[i].restart();
+      } else this.michis[i].visible = false;
+    }
+  }
 
   update () {
     
@@ -372,9 +421,10 @@ class MyScene extends THREE.Scene {
       this.fondo.update(delta);
 
       // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
-      this.control.update(this.am, this.gato, delta);
+      this.guiControls.pause = this.control.update(this.am, this.michis[this.jugando], delta);
+      if (this.guiControls.pause) this.irAMenu();
 
-      this.gato.update(delta);
+      this.michis[this.jugando].update(delta);
 
       // Luces
       // Amanece
@@ -460,7 +510,7 @@ $(function () {
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
   window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
-  //window.addEventListener("keyup" (event) => scene.onKeyUp(event), true);
+  window.addEventListener("keyup", (event) => scene.onKeyUp(event), false);
   window.addEventListener("onclick", (event) => scene.onClick(event), true);
   
   // Que no se nos olvide, la primera visualización.

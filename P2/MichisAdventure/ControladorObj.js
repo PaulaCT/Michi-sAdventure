@@ -6,6 +6,8 @@ import { ControladorObstaculo } from './ControladorObstaculo.js'
 // Constantes
 const POS_GATO = 0;
 const FINAL_CAMINO = -50;
+const SUERTE = 4;
+const SUERTE_CHINO = 7;
 
 class ControladorObj extends THREE.Object3D {
   // ---------- Constructor ----------
@@ -88,12 +90,12 @@ class ControladorObj extends THREE.Object3D {
   // ---------- Función aleatoria ----------
   // Elige si lanzaremos monedas (cuáles) y obstáculos (cuáles)
 
-  aleatoria() {
+  aleatoria(suerte) {
     var lanzar_moneda = false;
     var lanzar_obstaculo = false;
 
     // Primero vemos si lanzar monedas
-    if (this.get_random(0,5) != 0) lanzar_moneda = true;
+    if (this.get_random(0,suerte) != 0) lanzar_moneda = true;
 
     // Y ahora vemos si lanzar obstáculos (menos posibilidad, podría variar con nivel)
     if (this.get_random(0,4) != 0) lanzar_obstaculo = true;
@@ -174,6 +176,7 @@ class ControladorObj extends THREE.Object3D {
     if (this.vidas == 0) {
       window.alert("Game over");
       this.vidas = 7;
+      return true;
     }
 
     // Cada 4 segundos (o menos si am) actualizamos la lista, seleccionamos los siguientes elementos
@@ -187,7 +190,8 @@ class ControladorObj extends THREE.Object3D {
       this.actualizar_lista();
       console.log("Dinero: " + this.dinero);
       console.log("Vidas: " + this.vidas);
-      this.aleatoria();
+      if (gato.who == 2) this.aleatoria(SUERTE_CHINO);
+      else this.aleatoria(SUERTE);
       this.inicio_movimiento = time;
     }
 
@@ -203,6 +207,7 @@ class ControladorObj extends THREE.Object3D {
         this.obstaculos[i].update(am, gato, this.vidas, delta);
       } 
     }
+    return false;
   }
 
 
