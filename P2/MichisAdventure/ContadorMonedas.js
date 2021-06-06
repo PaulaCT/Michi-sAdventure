@@ -68,19 +68,19 @@ class ContadorMonedas extends THREE.Object3D {
 
       if(this.unidades != 9){
         this.unidades++;
-        this.animU.animacion(this.unidades, 1, 100000);
+        this.animU.animacion(this.unidades, 1, 1);
       }
       else if(this.decenas != 9){
         this.unidades = 0;
-        this.animU.animacion(this.unidades, 1, 100000);
+        this.animU.animacion(this.unidades, 1, 1);
         this.decenas++;
-        this.animD.animacion(this.decenas, 1, 100000);
+        this.animD.animacion(this.decenas, 1, 1);
       }
       else if(this.centenas != 9){
         this.decenas = 0;
-        this.animD.animacion(this.decenas, 1, 100000);
+        this.animD.animacion(this.decenas, 1, 1);
         this.centenas++;
-        this.animC.animacion(this.centenas, 1, 100000);
+        this.animC.animacion(this.centenas, 1, 1);
       }
 
     }

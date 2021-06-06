@@ -44,28 +44,28 @@ class Interfaz extends THREE.Object3D {
     
     switch(vidas){
       case 7:
-        this.anim.animacion(0, 1, 100000);
+        this.anim.animacion(0, 1, 1);
         break;
       case 6:
-        this.anim.animacion(1, 1, 100000);
+        this.anim.animacion(1, 1, 1);
         break;
       case 5:
-        this.anim.animacion(2, 1, 100000);
+        this.anim.animacion(2, 1, 1);
         break;
       case 4:
-        this.anim.animacion(3, 1, 100000);
+        this.anim.animacion(3, 1, 1);
         break;
       case 3:
-        this.anim.animacion(4, 1, 100000);
+        this.anim.animacion(4, 1, 1);
         break;
       case 2:
-        this.anim.animacion(5, 1, 100000);
+        this.anim.animacion(5, 1, 1);
         break;
       case 1:
-        this.anim.animacion(6, 1, 100000);
+        this.anim.animacion(6, 1, 1);
         break;
       case 0:
-        this.anim.animacion(7, 1, 100000);
+        this.anim.animacion(7, 1, 1);
         break;
     }
     this.contador.update(dinero);
