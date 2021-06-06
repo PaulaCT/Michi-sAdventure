@@ -27,11 +27,6 @@ class Objeto extends THREE.Object3D {
     texture.magFilter = THREE.NearestFilter;
     this.annie = new TextureAnimator(texture, columnas, filas, 150);
 
-    // Con TextureAnimator podemos crear una animación tradicional
-    /*if (imagen == './michis-imgs/coin_extended.png')
-      this.annie = new TextureAnimator(texture,1,6,6,170);
-    else this.annie = new TextureAnimator(texture,1,1,1,1000);*/
-
     var objetoMat = new THREE.MeshPhongMaterial ({map: texture, side:THREE.DoubleSide, transparent: true,});
 
     this.objeto = new THREE.Mesh (objetoGeom, objetoMat);

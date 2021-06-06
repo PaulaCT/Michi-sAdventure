@@ -116,6 +116,7 @@ class MyScene extends THREE.Scene {
 
     // El caracal puede saltar mucho, tendremos un tiempo para gestionarlo
     this.inicio_salto = 0;
+    this.keypressed = false;
 
     // 5. Algunos controles extras
 
@@ -126,9 +127,24 @@ class MyScene extends THREE.Scene {
     // Para la habilidad del Michi añadimos un tiempo de enfriamiento
     // El tiempo será falso para que empiece con la habilidad cargada
     this.enfriamiento = 1000;
+    this.habilidad = true;
 
     this.last_time = Date.now();
     this.am = false;
+
+    // Por último, añadimos el audio
+    const listener = new THREE.AudioListener();
+    this.camera.add( listener );
+
+    const musiquita = new THREE.Audio( listener );
+
+    const audioLoader = new THREE.AudioLoader();
+    audioLoader.load( './michis-imgs/begin_your_journey.mp3', function( buffer ) {
+      musiquita.setBuffer( buffer );
+      musiquita.setLoop( true );
+      musiquita.setVolume( 0.5 );
+      musiquita.play();
+    });
     
   }
   
@@ -269,7 +285,7 @@ class MyScene extends THREE.Scene {
       }).onComplete(function(){
         l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
       });
-      var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 5).onUpdate(function() {
+      var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 3).onUpdate(function() {
         that.luz_5.intensity = l5.e;
       }).onComplete(function(){
         l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
@@ -328,17 +344,23 @@ class MyScene extends THREE.Scene {
     var keyCode = event.which;
     switch(keyCode) {
         // Up
-        case 38: if (this.jugando == 1) this.inicio_salto = Date.now();
-          else this.michis[this.jugando].jump('up'); break;
+        case 38: if (this.jugando == 1) { if (!this.keypressed) {
+            this.keypressed = true;
+            this.inicio_salto = Date.now();
+            console.log(this.keypressed);
+          }} else this.michis[this.jugando].jump('up'); break;
         // Down
-        case 40: if (this.jugando == 1) this.inicio_salto = Date.now();
-          else this.michis[this.jugando].jump('down'); break;
+        case 40: if (this.jugando == 1) { if (!this.keypressed) {
+            this.keypressed = true;
+            this.inicio_salto = Date.now();
+          }} else this.michis[this.jugando].jump('down'); break;
         //Space
-        case 32: var actual = Date.now();
-        if ((-(this.enfriamiento - actual) / 1000) > 10) {
-          this.michis[this.jugando].lanzar_habilidad();
-          this.enfriamiento = actual;
-        } else console.log ("No puedes hacer eso"); break;
+        case 32: if (this.habilidad) {
+            this.michis[this.jugando].lanzar_habilidad();
+            this.enfriamiento = Date.now();
+            this.habilidad = false;
+          } else console.log ("No puedes hacer eso"); break;
+
         // Para el menú principal
         // Left
         case 37: this.menu.cambiarGatito('left'); break;
@@ -362,19 +384,28 @@ class MyScene extends THREE.Scene {
 
   // Si añadimos al caracal habría que contar esto
   onKeyUp (event) {
-    var keyCode = event.which;
-    switch(keyCode) {
-        // Up
-        case 38: if ((this.inicio_salto - Date.now()) / 1000 < 0.5) {
-            if (this.jugando == 1) this.michis[this.jugando].jump('up');
-          } else if (this.jugando == 1) this.michis[this.jugando].big_jump('up');
-          break;
-        // Down
-        case 40: if ((this.inicio_salto - Date.now()) / 1000 < 0.1) {
-            if (this.jugando == 1) this.michis[this.jugando].jump('down');
-          } else if (this.jugando == 1) this.michis[this.jugando].big_jump('down');
-          this.inicio_salto = 0; break;
+    if (this.jugando == 1 && this.keypressed){
+      var keyCode = event.which;
+      var now = Date.now();
+      switch(keyCode) {
+          // Up
+          case 38: 
+          if (-(this.inicio_salto - now) / 1000 <= 0.2) {
+              this.michis[this.jugando].jump('up');
+            } else this.michis[this.jugando].big_jump('up');
+            break;
+          // Down
+          case 40:
+            if (-(this.inicio_salto - now) / 1000 <= 0.2) {
+              this.michis[this.jugando].jump('down');
+            } else this.michis[this.jugando].big_jump('down');
+            break;
+          default: break;
+      }
+      this.inicio_salto = 0; this.keypressed = false;
+      console.log(this.keypressed);
     }
+
   }
 
   irAMenu(){
@@ -486,6 +517,14 @@ class MyScene extends THREE.Scene {
 
       // Luces
       TWEEN.update();
+
+      // Habilidad
+      if (!this.habilidad) {
+        var actual = Date.now();
+        if (-(this.enfriamiento - actual) / 1000 > 10) {
+          this.habilidad = true;
+        }
+      }
     }
     
     

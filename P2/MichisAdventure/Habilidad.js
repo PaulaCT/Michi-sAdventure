@@ -10,16 +10,18 @@ class Habilidad extends THREE.Object3D {
   constructor() {
     super();
 
-    // Cargamos la textura   -----   editar
-    /*var texture = new THREE.TextureLoader().load('../gato/habilidad.png');
+    // Cargamos la textura
+    var texture = new THREE.TextureLoader().load('./michis-imgs/habilidad.png');
+
     // Le asignamos NearestFilter (por defecto asigna LinearFilter, que emborrona el pixelArt)
     texture.magFilter = THREE.NearestFilter;
+
     // Gestion de la animacion de la textura (textura, casillasHorizontales, casillasVerticales, numTotalFrames, duracionCasilla)
-    this.annie = new TextureAnimator(texture, 13, 5, 150);
-    var material = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide, transparent: true } ); */
+    this.annie = new TextureAnimator(texture, 7, 1, 150);
+    var habMat = new THREE.MeshBasicMaterial( { map: texture, side:THREE.DoubleSide, transparent: true } ); 
 
     var habGeom = new THREE.BoxGeometry(0.5, 0.5);
-    var habMat = new THREE.MeshPhongMaterial({color: 0xF71FDB});
+
     this.hab = new THREE.Mesh (habGeom, habMat);
 
     // Al principio nos da igual dónde esté (hasta que se lance)
@@ -56,7 +58,7 @@ class Habilidad extends THREE.Object3D {
   // ---------- Función update ----------
   // Controla el desplazamiento por el carril
   
-  update() {
+  update(tiempo) {
     
     if (this.visible) {
       // Calculamos el tiempo y desplazamos la habilidad tanto como sea necesario
@@ -65,6 +67,8 @@ class Habilidad extends THREE.Object3D {
       this.pos_x = this.pos_x + segundos * VELOCIDAD;
       this.hab.position.x = this.pos_x;
       this.last_time = time;
+
+      this.annie.animacion(0, 6, tiempo * 1000);
     }   
   }
 

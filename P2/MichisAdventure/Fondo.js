@@ -6,7 +6,7 @@ import { ThreeBSP } from '../libs/ThreeBSP.js'
 // Constantes
 const VELOCIDAD_FONDO = 0.002;
 const VELOCIDAD_SUELO = 0.2;
-const VELOCIDAD_CIELO = 0.4;
+const VELOCIDAD_CIELO = 0.2;
 const VELOCIDAD_NUBES = 0.8;
 
 class Fondo extends THREE.Object3D {
@@ -190,8 +190,8 @@ class Fondo extends THREE.Object3D {
     var caja_ext = new THREE.BoxGeometry(200, 200, 0.2);
     var caja_int = new THREE.BoxGeometry(40, 40, 0.2);
     
-    caja_ext.translate(0 , 0 , 1.4);
-    caja_int.translate(0 , 5 , 1.4);  
+    caja_ext.translate(0 , 0 , 3);
+    caja_int.translate(0 , 5 , 3);  
 
     var caja_extBSP = new ThreeBSP(caja_ext);
     var caja_intBSP = new ThreeBSP(caja_int);

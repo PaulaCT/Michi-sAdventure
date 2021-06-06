@@ -30,7 +30,7 @@ class Obstaculo extends THREE.Object3D {
 
   activate(){
     this.obstaculo.activate();
-    this.annie.animacion(1, 0, 150);
+    this.annie.animacion(0, 0, 150);
     this.annie.restart();
   }
 
@@ -86,7 +86,7 @@ class Obstaculo extends THREE.Object3D {
       }
     }
     
-    if (!this.explosion && this.obstaculo.colision(gato)) {
+    if (!this.explosion && gato.get_movimiento() != 'jump' && this.obstaculo.colision(gato)) {
       // Si solo le quedaba una vida, muere
       if (vidas == 1) gato.die();
       else {

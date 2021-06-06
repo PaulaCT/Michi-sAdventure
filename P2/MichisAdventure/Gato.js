@@ -44,7 +44,6 @@ class Gato extends THREE.Object3D {
 
     // Para la colisión
     this.gato.geometry.computeBoundingBox();
-    this.inmortal = false;
 
     this.gato.position.set(0, carril2.y, carril2.z);
     this.gato.scale.set(carril2.s,carril2.s,carril2.s);
@@ -160,7 +159,7 @@ class Gato extends THREE.Object3D {
 
     // Si se ha lanzado la habilidad
     if (this.habilidad) { 
-      this.hab.update();
+      this.hab.update(tiempo);
       // Si no ha colisionado con nada
       if (this.hab.get_pos_x() >= FINAL_CAMINO_H) {
         this.habilidad = false;
@@ -303,11 +302,11 @@ class Gato extends THREE.Object3D {
     return this.hab;
   }
 
-  // ---------- Función get_inmortal ----------
-  // Devuelve true si el gato es inmortal
+  // ---------- Función get_movimiento ----------
+  // Devuelve el label
 
-  get_inmortal() {
-    return this.inmortal;
+  get_movimiento() {
+    return this.label;
   }
 }
 

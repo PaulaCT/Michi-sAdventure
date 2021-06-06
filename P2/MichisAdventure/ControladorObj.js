@@ -173,12 +173,6 @@ class ControladorObj extends THREE.Object3D {
 
   update(am, gato, delta, interfaz){  
 
-    if (this.vidas == 0) {
-      window.alert("Game over");
-      this.vidas = 7;
-      return true;
-    }
-
     // Cada 4 segundos (o menos si am) actualizamos la lista, seleccionamos los siguientes elementos
     // y los lanzamos
     var time = Date.now();
@@ -210,6 +204,13 @@ class ControladorObj extends THREE.Object3D {
         this.obstaculos[i].update(am, gato, this.vidas, delta);
       } 
     }
+
+    if (this.vidas == 0) {
+      window.alert("Game over");
+      this.vidas = 7;
+      return true;
+    }
+
     return false;
   }
 
