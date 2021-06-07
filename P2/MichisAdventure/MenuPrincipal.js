@@ -44,10 +44,12 @@ class MenuPrincipal extends THREE.Object3D {
     this.michi_afortunado = 0;
 
     // Fondo
-    var fondo_geom = new THREE.BoxGeometry(200, 200, 0.2);
-    var fondo_textura = new THREE.TextureLoader().load('./michis-imgs/yoquese.jpg');
+    var fondo_geom = new THREE.BoxGeometry(150, 80, 0.2);
+    var fondo_textura = new THREE.TextureLoader().load('./michis-imgs/ini.png');
+    fondo_textura.magFilter = THREE.NearestFilter;
     var fondo_mat = new THREE.MeshPhongMaterial({map: fondo_textura});
     this.fondo = new THREE.Mesh (fondo_geom, fondo_mat);
+    this.fondo.position.y = 10;
     this.add(this.fondo);
 
     // Botón
