@@ -60,7 +60,7 @@ class MyScene extends THREE.Scene {
 
     // 1. Eje del menú principal
     this.axis = new THREE.AxesHelper(5);
-    this.axis.position.set(500,0,0);
+    this.axis.position.set(500,-15, 0);
     this.add(this.axis);
 
     // 2. Luces del menú principal
