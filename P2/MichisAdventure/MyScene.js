@@ -64,6 +64,7 @@ class MyScene extends THREE.Scene {
 
     // 2. Luces del menú principal
     this.luz_menu = new THREE.SpotLight(0xF9CEF3, 1);
+    this.luz_menu.angle = Math.PI;
     this.luz_menu.position.set(600, 60, 100);
     this.objetivo_menu = new THREE.Object3D();
     this.objetivo_menu.position.set(500, 30, 0);
@@ -74,9 +75,6 @@ class MyScene extends THREE.Scene {
     // 3. Menú principal
     this.menu = new MenuPrincipal();
     this.axis.add(this.menu);
-
-    // 4. Control del botón del menú principal
-    // TO DO 
 
     // Ahora construimos el resto del juego
 
@@ -122,6 +120,7 @@ class MyScene extends THREE.Scene {
 
     // Interfaz
     this.interfaz = new Interfaz();
+    this.interfaz.position.z = 2;
     this.add(this.interfaz);
 
     // Para la habilidad del Michi añadimos un tiempo de enfriamiento
@@ -183,9 +182,9 @@ class MyScene extends THREE.Scene {
     // En este caso la intensidad de la luz y si se muestran o no los ejes
     this.guiControls = new function() {
       // En el contexto de una función   this   alude a la función
-      this.lightIntensity = 0.5;
+      /*this.lightIntensity = 0.5;
       this.axisOnOff = true;
-      this.animate = false;
+      this.animate = false;*/
       this.pause = true;
     }
 
@@ -194,10 +193,6 @@ class MyScene extends THREE.Scene {
 
     // PAUSA
     folder.add (this.guiControls, 'pause').name("Pausar ");
-    
-    // Se le añade un control para la intensidad de la luz
-    //folder.add (this.guiControls, 'lightIntensity', 0, 1, 0.1).name('Intensidad de la Luz : ');
-    
 
     return gui;
   }
@@ -408,6 +403,38 @@ class MyScene extends THREE.Scene {
 
   }
 
+  // Detectar click en botón start
+  onClick (event) {
+    // Posición del ratón
+    var raton = new THREE.Vector3();
+    raton.x = 2 * (event.clientX / window.innerWidth) - 1;
+    raton.y = 1 - 2 * ( event.clientY / window.innerHeight);
+
+    // Añadimos el raycaster
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(raton, this.camera);
+
+    // Objeto seleccionable
+    var objeto_seleccionable = this.menu.get_boton();
+
+    var objeto_seleccionado = raycaster.intersectObject(objeto_seleccionable, true);
+    
+    if (objeto_seleccionado.length > 0) {
+      if (objeto_seleccionable == objeto_seleccionado[0].object) {
+        // Inicio juego
+        this.jugando = this.menu.start();
+        this.configurarMichis();
+        this.camera.position.set(0, 5, 10);
+        var look = new THREE.Vector3 (0, 5, 0);
+        this.camera.lookAt(look);
+        this.cameraControl.target = look;
+        this.camera.zoom = 1.3;
+        this.camera.updateProjectionMatrix();
+        this.guiControls.pause = false;
+      }
+    }
+  }
+
   irAMenu(){
     this.camera.position.set(500, 0, 10);
     var look = new THREE.Vector3 (500,0,0);
@@ -552,7 +579,7 @@ $(function () {
   window.addEventListener ("resize", () => scene.onWindowResize());
   window.addEventListener("keydown", (event) => scene.onKeyDown(event), true);
   window.addEventListener("keyup", (event) => scene.onKeyUp(event), false);
-  window.addEventListener("onclick", (event) => scene.onClick(event), true);
+  window.addEventListener("click", (event) => scene.onClick(event), false);
   
   // Que no se nos olvide, la primera visualización.
   scene.update();

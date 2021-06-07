@@ -20,7 +20,7 @@ class Gato extends THREE.Object3D {
     switch(who) {
       case 0: imagen = './michis-imgs/gato.png'; break;
       case 1: imagen = './michis-imgs/texturaCaracal.png'; break;
-      case 2: imagen = './michis-imgs/gato.png'; break;
+      case 2: imagen = './michis-imgs/chino.png'; break;
       default: break;
     }
 
