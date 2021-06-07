@@ -33,16 +33,16 @@ class Fondo extends THREE.Object3D {
     // Ahora añadimos el sol, y la luna (darán vueltas sobre una trayectoria circular)
 
     // Podríamos usar una base circular en vez de una caja
-    var solGeom = new THREE.BoxGeometry(2,2,0.2);
-    //var textura_sol = new THREE.TextureLoader().load('');
-    var solMat = new THREE.MeshPhongMaterial({color: 0xF5E866});
+    var solGeom = new THREE.BoxGeometry(4,4,0.2);
+    var texturaSol = new THREE.TextureLoader().load('./michis-imgs/sol.png');
+    var solMat = new THREE.MeshPhongMaterial({map: texturaSol, transparent: true,});
     this.sol = new THREE.Mesh (solGeom, solMat);
     this.sol.position.set(5,20,-0.4);
     this.add(this.sol);
 
-    var lunaGeom = new THREE.BoxGeometry(2,2,0.2);
-    //var textura_luna = new THREE.TextureLoader().load('');
-    var lunaMat = new THREE.MeshPhongMaterial({color: 0xA08FD5});
+    var lunaGeom = new THREE.BoxGeometry(4,4,0.2);
+    var texturaLuna = new THREE.TextureLoader().load('./michis-imgs/luna.png');
+    var lunaMat = new THREE.MeshPhongMaterial({map: texturaLuna, transparent: true,});
     this.luna = new THREE.Mesh (lunaGeom, lunaMat);
     this.luna.position.set(5,-20,-0.4);
     this.add(this.luna);
