@@ -250,48 +250,49 @@ class MyScene extends THREE.Scene {
   }
 
   animateLights () {
-      var that = this;
-      var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
-        that.luz_1.intensity = l0.a;
-      }).onComplete(function(){
-        l0 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
-      });
-      var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
-        that.luz_1.intensity = l1.a;
-        that.luz_2.intensity = l1.b;
-      }).onComplete(function(){
-        l1 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
-      });
-      var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
-        that.luz_2.intensity = l2.b;
-        that.luz_3.intensity = l2.c;
-      }).onComplete(function(){
-        l2 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
-      });
-      var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
-        that.luz_3.intensity = l3.c;
-        that.luz_4.intensity = l3.d;
-      }).onComplete(function(){
-        l3 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
-      });
-      var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
-        that.luz_4.intensity = l4.d;
-        that.luz_5.intensity = l4.e;
-      }).onComplete(function(){
-        l4 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
-      });
-      var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 3).onUpdate(function() {
-        that.luz_5.intensity = l5.e;
-      }).onComplete(function(){
-        l5 = {a: 0, b: 0, c: 0, d: 0, e: 0};
-      });
-      
-      manianita.start().chain(pleno_dia);
-      pleno_dia.chain(atardece);
-      atardece.chain(anochece);
-      anochece.chain(noche);
-      noche.chain(amanece);
-      amanece.chain(manianita);
+    var that = this;
+    var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
+      that.luz_1.intensity = l5.a;
+    }).onComplete(function(){
+      l5 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
+    });
+    var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
+      that.luz_1.intensity = l0.a;
+      that.luz_2.intensity = l0.b;
+    }).onComplete(function(){
+      l0 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
+    });
+    var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
+      that.luz_2.intensity = l1.b;
+      that.luz_3.intensity = l1.c;
+    }).onComplete(function(){
+      l1 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
+    });
+    var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
+      that.luz_3.intensity = l2.c;
+      that.luz_4.intensity = l2.d;
+    }).onComplete(function(){
+      l2 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
+    });
+    var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
+      that.luz_4.intensity = l3.d;
+      that.luz_5.intensity = l3.e;
+    }).onComplete(function(){
+      l3 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
+    });
+    var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 3).onUpdate(function() {
+      that.luz_5.intensity = l4.e;
+    }).onComplete(function(){
+      l4 = {a: 0, b: 0, c: 0, d: 0, e: 0};
+    });
+    
+    manianita.chain(pleno_dia);
+    pleno_dia.chain(atardece);
+    atardece.chain(anochece);
+    anochece.chain(noche);
+    noche.chain(amanece);
+    amanece.chain(manianita);
+    manianita.start();
   }
   
   createRenderer (myCanvas) {
@@ -486,6 +487,7 @@ class MyScene extends THREE.Scene {
 
       this.michis[this.jugando].update(delta);
 
+      /*
       // Luces
       // Amanece
       if (this.count_luces < TRANSICION) {
@@ -541,6 +543,7 @@ class MyScene extends THREE.Scene {
         this.count_luces = 0;
       }
       this.count_luces++;
+      */
 
       // Luces
       TWEEN.update();
