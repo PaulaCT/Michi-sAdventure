@@ -13,6 +13,7 @@ import { ControladorObj } from './ControladorObj.js'
 import { Fondo } from './Fondo.js'
 import { Gato } from './Gato.js'
 import { Interfaz } from './Interfaz.js'
+import { ControladorObstaculo } from './ControladorObstaculo.js'
 
 /// La clase fachada del modelo
 /**
@@ -145,6 +146,9 @@ class MyScene extends THREE.Scene {
       musiquita.play();
     });
     
+    // si ves esto eliminalo que era para depurar
+    this.inicio_movimiento = Date.now();
+
   }
   
   createCamera () {
@@ -254,36 +258,36 @@ class MyScene extends THREE.Scene {
     var amanece = new TWEEN.Tween(l5).to(l0, TRANSICION).onUpdate(function() {
       that.luz_1.intensity = l5.a;
     }).onComplete(function(){
-      l5 = {a: INTENSIDAD_MEDIA, b: 0, c: 0, d: 0, e: 0};
+      console.log("amanece completada");
     });
     var manianita = new TWEEN.Tween(l0).to(l1, TRANSICION).onUpdate(function() {
       that.luz_1.intensity = l0.a;
       that.luz_2.intensity = l0.b;
     }).onComplete(function(){
-      l0 = {a: 0, b: INTENSIDAD_MEDIA, c: 0, d: 0, e: 0};
+      console.log("manianita completada");
     });
     var pleno_dia = new TWEEN.Tween(l1).to(l2, TRANSICION).onUpdate(function() {
       that.luz_2.intensity = l1.b;
       that.luz_3.intensity = l1.c;
     }).onComplete(function(){
-      l1 = {a: 0, b: 0, c: INTENSIDAD_MEDIA, d: 0, e: 0};
+      console.log("plenodia completada");
     });
     var atardece = new TWEEN.Tween(l2).to(l3, TRANSICION).onUpdate(function() {
       that.luz_3.intensity = l2.c;
       that.luz_4.intensity = l2.d;
     }).onComplete(function(){
-      l2 = {a: 0, b: 0, c: 0, d: INTENSIDAD_MEDIA, e: 0};
+      console.log("atardece completada");
     });
     var anochece = new TWEEN.Tween(l3).to(l4, TRANSICION).onUpdate(function() {
       that.luz_4.intensity = l3.d;
       that.luz_5.intensity = l3.e;
     }).onComplete(function(){
-      l3 = {a: 0, b: 0, c: 0, d: 0, e: INTENSIDAD_MEDIA};
+      console.log("anochece completada");
     });
     var noche = new TWEEN.Tween(l4).to(l5, TRANSICION * 3).onUpdate(function() {
       that.luz_5.intensity = l4.e;
     }).onComplete(function(){
-      l4 = {a: 0, b: 0, c: 0, d: 0, e: 0};
+      console.log("noche completada");
     });
     
     manianita.chain(pleno_dia);
@@ -469,6 +473,21 @@ class MyScene extends THREE.Scene {
         this.last_time = time;
     }
 
+    var time = Date.now();
+      var segundos = -(this.inicio_movimiento - time) / 1000;
+      if (segundos > 4 ){
+        console.log("Luz1: " + this.luz_1.intensity);
+        console.log("Luz2: " + this.luz_2.intensity);
+        console.log("Luz3: " + this.luz_3.intensity);
+        console.log("Luz4: " + this.luz_4.intensity);
+        console.log("Luz5: " + this.luz_5.intensity);
+        console.log("\nl0: " + l0.a);
+        this.inicio_movimiento = time;
+      }
+
+    // Luces
+    TWEEN.update();
+
     if (this.guiControls.pause) {
       var delta_prueba = clock.getDelta();
       this.menu.update(delta_prueba); 
@@ -486,67 +505,6 @@ class MyScene extends THREE.Scene {
       if (this.guiControls.pause) this.irAMenu();
 
       this.michis[this.jugando].update(delta);
-
-      /*
-      // Luces
-      // Amanece
-      if (this.count_luces < TRANSICION) {
-          // Se apaga la luz_1, comienza la luz 2
-          this.luz_1.intensity -= 0.05; 
-          this.luz_2.intensity += 0.05;
-      } else if (this.count_luces < 2 * TRANSICION) {
-          // Luz 2 completamente encendida
-          this.luz_2.intensity += 0.05;
-      } else if (this.count_luces < 3 * TRANSICION) {
-          this.luz_2.intensity -= 0.05;
-
-      // Ya es por la mañana
-      } else if (this.count_luces < 4 * TRANSICION) {
-          // Se apaga la luz_2, comienza la luz 3
-          this.luz_2.intensity -= 0.05; 
-          this.luz_3.intensity += 0.05;
-      } else if (this.count_luces < 5 * TRANSICION) {
-          // Luz 2 completamente encendida
-          this.luz_3.intensity += 0.05;
-      } else if (this.count_luces < 6 * TRANSICION) {
-          this.luz_3.intensity -= 0.05;
-
-      // Es de día
-      } else if (this.count_luces < 7 * TRANSICION) {
-          // Se apaga la luz 3, comienza la luz 4
-          this.luz_3.intensity -= 0.05; 
-          this.luz_4.intensity += 0.05;
-      } else if (this.count_luces < 8 * TRANSICION) {
-          // Luz 4 completamente encendida
-          this.luz_4.intensity += 0.05;
-      } else if (this.count_luces < 9 * TRANSICION) {
-          this.luz_4.intensity -= 0.05;
-
-      // Atardece
-      } else if (this.count_luces < 10 * TRANSICION) {
-          // Se apaga la luz 4, comienza la luz 5
-          this.luz_4.intensity -= 0.05; 
-          this.luz_5.intensity += 0.05;
-      } else if (this.count_luces < 11 * TRANSICION) {
-          // Luz 5 completamente encendida
-          this.luz_5.intensity += 0.05;
-      } else if (this.count_luces < 12 * TRANSICION) {
-          this.luz_5.intensity -= 0.05;
-
-      // Cae la noche
-      } else if (this.count_luces < 14 * TRANSICION) {
-          // Se apaga completamente la luz 5
-          this.luz_5.intensity -= 0.025; 
-      }else if (this.count_luces == 24 * TRANSICION) {
-        this.luz_1.intensity = this.luz_2.intensity = this.luz_3.intensity 
-            = this.luz_4.intensity = this.luz_5.intensity = 0;
-        this.count_luces = 0;
-      }
-      this.count_luces++;
-      */
-
-      // Luces
-      TWEEN.update();
 
       // Habilidad
       if (!this.habilidad) {
