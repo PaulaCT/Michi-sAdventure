@@ -189,19 +189,20 @@ class ControladorObj extends THREE.Object3D {
       this.inicio_movimiento = time;
     }
 
-    //Actualizamos interfaz
-    interfaz.update(this.vidas, this.dinero);
-
     // Llamamos al update de todos los controladores que hayan sido lanzados 
     // y hacemos recuento de las colisiones
     for (var i=0; i<6; i++){
       if (!this.moneda_lista[i]) {
         this.dinero = this.dinero + this.monedas[i].get_recogidas();
         this.monedas[i].update(am,gato, delta);
+        //Actualizamos interfaz
+        interfaz.update('dinero', this.dinero);
       } 
       if (!this.obstaculo_listo[i]) {
         this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
         this.obstaculos[i].update(am, gato, this.vidas, delta);
+        //Actualizamos interfaz
+        interfaz.update('vidas', this.vidas);
       } 
     }
 

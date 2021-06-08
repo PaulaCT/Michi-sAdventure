@@ -359,6 +359,7 @@ class MyScene extends THREE.Scene {
             this.michis[this.jugando].lanzar_habilidad();
             this.enfriamiento = Date.now();
             this.habilidad = false;
+            this.interfaz.update('habilidad', 0);
           } else console.log ("No puedes hacer eso"); break;
 
         // Para el menú principal
@@ -511,6 +512,7 @@ class MyScene extends THREE.Scene {
         var actual = Date.now();
         if (-(this.enfriamiento - actual) / 1000 > 10) {
           this.habilidad = true;
+          this.interfaz.update('habilidad', 1);
         }
       }
     }
