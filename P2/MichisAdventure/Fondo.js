@@ -6,7 +6,6 @@ import { ThreeBSP } from '../libs/ThreeBSP.js'
 // Constantes
 const VELOCIDAD_FONDO = 0.002;
 const VELOCIDAD_SUELO = 0.2;
-const VELOCIDAD_CIELO = 0.2;
 const VELOCIDAD_NUBES = 0.8;
 
 class Fondo extends THREE.Object3D {
@@ -67,8 +66,8 @@ class Fondo extends THREE.Object3D {
     // Posiciones
     const dia = {p:0};
     const noche = {p:0.5};
-    var loop_dia = 12000 / VELOCIDAD_CIELO;
-    var loop_noche = 12000 / VELOCIDAD_CIELO;
+    const loop_dia = 80000      
+    const loop_noche = 80000    
 
     var bucle_dia = new TWEEN.Tween(dia).to(noche, loop_dia).easing(TWEEN.Easing.Quadratic.InOut).onUpdate(()=>{
         var pos = this.recorrido_sol_luna.getPointAt(dia.p);
