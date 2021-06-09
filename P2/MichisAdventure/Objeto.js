@@ -61,14 +61,12 @@ class Objeto extends THREE.Object3D {
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indica si son las 3am
   // Controla el movimiento el desplazamiento por el carril
   
-  update (am, delta) { 
+  update (delta) { 
     // desplazamos al objeto tanto como sea necesario
     
-    if (am) this.pos_x = this.pos_x - (delta * VELOCIDAD_3AM);
-    else this.pos_x = this.pos_x - (delta * VELOCIDAD);
+    this.pos_x = this.pos_x - (delta * VELOCIDAD);
     this.objeto.position.set(this.pos_x, this.inicio.y, this.inicio.z);
 
   }

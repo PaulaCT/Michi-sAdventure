@@ -13,7 +13,6 @@ import { ControladorObj } from './ControladorObj.js'
 import { Fondo } from './Fondo.js'
 import { Gato } from './Gato.js'
 import { Interfaz } from './Interfaz.js'
-import { ControladorObstaculo } from './ControladorObstaculo.js'
 
 /// La clase fachada del modelo
 /**
@@ -52,7 +51,7 @@ class MyScene extends THREE.Scene {
     this.renderer = this.createRenderer(myCanvas);
     
     // Se añade a la gui los controles para manipular los elementos de esta clase
-    this.gui = this.createGUI ();
+    //this.gui = this.createGUI ();
     
     // Construimos los distinos elementos que tendremos en la escena
     // Tendremos una cámara con un control de movimiento con el ratón
@@ -130,7 +129,6 @@ class MyScene extends THREE.Scene {
     this.habilidad = true;
 
     this.last_time = Date.now();
-    this.am = false;
 
     // Por último, añadimos el audio
     const listener = new THREE.AudioListener();
@@ -146,9 +144,10 @@ class MyScene extends THREE.Scene {
       musiquita.play();
     });
     
-    // si ves esto eliminalo que era para depurar
-    this.inicio_movimiento = Date.now();
+    this.pause = true;
 
+
+    
   }
   
   createCamera () {
@@ -170,36 +169,13 @@ class MyScene extends THREE.Scene {
     // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
     this.cameraControl = new TrackballControls (this.camera, this.renderer.domElement);
     // Se configuran las velocidades de los movimientos
-    this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.zoomSpeed = -2;
-    this.cameraControl.panSpeed = 0.5;
+    this.cameraControl.rotateSpeed = 0; // 5
+    this.cameraControl.zoomSpeed = 0;  // -2
+    this.cameraControl.panSpeed = 0;  // 0.5
     // Debe orbitar con respecto al punto de mira de la cámara
     this.cameraControl.target = look;
   }
   
-  createGUI () {
-    // Se crea la interfaz gráfica de usuario
-    var gui = new GUI();
-    
-    // La escena le va a añadir sus propios controles. 
-    // Se definen mediante una   new function()
-    // En este caso la intensidad de la luz y si se muestran o no los ejes
-    this.guiControls = new function() {
-      // En el contexto de una función   this   alude a la función
-      /*this.lightIntensity = 0.5;
-      this.axisOnOff = true;
-      this.animate = false;*/
-      this.pause = true;
-    }
-
-    // Se crea una sección para los controles de esta clase
-    var folder = gui.addFolder ('Controles');
-
-    // PAUSA
-    folder.add (this.guiControls, 'pause').name("Pausar ");
-
-    return gui;
-  }
   
   createLights () {
 
@@ -367,18 +343,7 @@ class MyScene extends THREE.Scene {
         case 37: this.menu.cambiarGatito('left'); break;
         // Right
         case 39: this.menu.cambiarGatito('right'); break;
-        // Cambiar!!!!
-        // q
-        case 81: this.jugando = this.menu.start();
-          this.configurarMichis();
-          this.camera.position.set(0, 5, 10);
-          var look = new THREE.Vector3 (0, 5, 0);
-          this.camera.lookAt(look);
-          this.cameraControl.target = look;
-          this.camera.zoom = 1.3;
-          this.camera.updateProjectionMatrix();
-          this.guiControls.pause = false;
-          break;
+
         default: break;
     }
   }
@@ -436,7 +401,7 @@ class MyScene extends THREE.Scene {
         this.cameraControl.target = look;
         this.camera.zoom = 1.3;
         this.camera.updateProjectionMatrix();
-        this.guiControls.pause = false;
+        this.pause = false;
       }
     }
   }
@@ -445,6 +410,8 @@ class MyScene extends THREE.Scene {
     this.camera.position.set(500, 0, 10);
     var look = new THREE.Vector3 (500,0,0);
     this.camera.lookAt(look);
+    this.camera.zoom = 1;
+    this.camera.updateProjectionMatrix();
     this.cameraControl.target = look;
   }
 
@@ -461,35 +428,7 @@ class MyScene extends THREE.Scene {
     // Se actualiza la posición de la cámara según su controlador
     this.cameraControl.update();
 
-
-    // Se actualiza el resto del modelo, le pasamos el tiempo
-    var time = Date.now();
-    var segundos = -(this.last_time - time) / 1000;
-    if (segundos >= SEG_HORA * 10) {
-        console.log("3 am");
-        this.am = true;
-        this.last_time = time;
-    } else if (this.am && segundos >= SEG_HORA * 2) {
-        this.am = false;
-        this.last_time = time;
-    }
-
-    var time = Date.now();
-      var segundos = -(this.inicio_movimiento - time) / 1000;
-      if (segundos > 4 ){
-        console.log("Luz1: " + this.luz_1.intensity);
-        console.log("Luz2: " + this.luz_2.intensity);
-        console.log("Luz3: " + this.luz_3.intensity);
-        console.log("Luz4: " + this.luz_4.intensity);
-        console.log("Luz5: " + this.luz_5.intensity);
-        console.log("\nl0: " + l0.a);
-        this.inicio_movimiento = time;
-      }
-
-    // Luces
-    TWEEN.update();
-
-    if (this.guiControls.pause) {
+    if (this.pause) {
       var delta_prueba = clock.getDelta();
       this.menu.update(delta_prueba); 
       
@@ -498,12 +437,15 @@ class MyScene extends THREE.Scene {
       var delta = clock.getDelta(); 
       var tiempo = clock.elapsedTime;
 
+      // Luces
+      TWEEN.update();
+
       // El fondo variará en función de la hora (no lo necesita de momento)
       this.fondo.update(delta);
 
-      // El primer parámetro indica si son las 3 am. Se pasa al gato como segundo parámetro
-      this.guiControls.pause = this.control.update(this.am, this.michis[this.jugando], delta, this.interfaz);
-      if (this.guiControls.pause) this.irAMenu();
+      //  Se pasa al gato como segundo parámetro
+      this.pause = this.control.update(this.michis[this.jugando], delta, this.interfaz);
+      if (this.pause) this.irAMenu();
 
       this.michis[this.jugando].update(delta);
 

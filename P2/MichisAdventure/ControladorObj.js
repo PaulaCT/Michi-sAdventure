@@ -84,6 +84,7 @@ class ControladorObj extends THREE.Object3D {
     // Crear un método para exportar estos datos a la interfaz gráfica
     this.vidas = 7;
     this.dinero = 0;
+
   }
 
 
@@ -169,16 +170,15 @@ class ControladorObj extends THREE.Object3D {
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indique si son las 3 am y al gato
+  // Recibe el gato
 
-  update(am, gato, delta, interfaz){  
+  update(gato, delta, interfaz){  
 
     // Cada 4 segundos (o menos si am) actualizamos la lista, seleccionamos los siguientes elementos
     // y los lanzamos
     var time = Date.now();
     var segundos = -(this.inicio_movimiento - time) / 1000;
     var frecuencia = 1;
-    if (am) frecuencia = 2.25;
 
     if (segundos > 4 / frecuencia){
       this.actualizar_lista();
@@ -194,21 +194,21 @@ class ControladorObj extends THREE.Object3D {
     for (var i=0; i<6; i++){
       if (!this.moneda_lista[i]) {
         this.dinero = this.dinero + this.monedas[i].get_recogidas();
-        this.monedas[i].update(am,gato, delta);
+        this.monedas[i].update(gato, delta);
         //Actualizamos interfaz
         interfaz.update('dinero', this.dinero);
       } 
       if (!this.obstaculo_listo[i]) {
         this.vidas = this.vidas - this.obstaculos[i].get_colisiones();
-        this.obstaculos[i].update(am, gato, this.vidas, delta);
+        this.obstaculos[i].update(gato, this.vidas, delta);
         //Actualizamos interfaz
         interfaz.update('vidas', this.vidas);
       } 
     }
-
+    
     if (this.vidas == 0) {
-      window.alert("Game over");
       this.vidas = 7;
+      window.alert("Game over");
       return true;
     }
 

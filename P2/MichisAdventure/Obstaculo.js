@@ -30,7 +30,6 @@ class Obstaculo extends THREE.Object3D {
 
   activate(){
     this.obstaculo.activate();
-    this.annie.animacion(0, 0, 150);
     this.annie.restart();
   }
 
@@ -38,10 +37,9 @@ class Obstaculo extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe:
   //    un booleano que indique si el obstáculo se ha de desplazar
-  //    un booleano que indique si son las 3am
   // Controla el movimiento de explotar en caso de colisión
 
-  update(mover, am, delta){    
+  update(mover, delta){    
     if (!this.invisible){
         if (mover) {
             // Aquí implementaríamos cosas para que explotara al colisionar
@@ -58,7 +56,7 @@ class Obstaculo extends THREE.Object3D {
             // else
 
             // Llamamos al update de Objeto.js
-            this.obstaculo.update(am, delta);
+            this.obstaculo.update(delta);
             
             // if (this.contador_explosion == 6) this.explotar = false; this.contador_explosion = 0;
         } 
@@ -73,19 +71,7 @@ class Obstaculo extends THREE.Object3D {
   // Recibe además del gato, las vidas restantes
 
   colision(gato, vidas){
-    // Si se ha lanzado la habilidad y nos puede afectar
-    if (gato.get_habilidad()) {
-      var habilidad = gato.get_hab();
-      if (habilidad.get_pos_y() == this.obstaculo.get_pos_y() && 
-        habilidad.get_pos_x() <= this.obstaculo.get_pos_x()){
-        // Si colisiona con la habilidad
-        if (this.obstaculo.colision(gato.get_hab())) { 
-          gato.set_habilidad(false);
-          this.explosion = true;
-        }
-      }
-    }
-    
+
     if (!this.explosion && gato.get_movimiento() != 'jump' && this.obstaculo.colision(gato)) {
       // Si solo le quedaba una vida, muere
       if (vidas == 1) gato.die();
@@ -100,12 +86,28 @@ class Obstaculo extends THREE.Object3D {
     return false;
   }
 
+    // ---------- Función colision_hab ----------
+  // Devuelve true si el obstáculo ha colisionado con la habilidad
+
+  colision_hab(habilidad){
+    return this.obstaculo.colision(habilidad);
+  }
+
+
 
   // ---------- Función get_pos_x ----------
   // Llama a la función get_pos_x de Objeto.js
 
   get_pos_x(){
     return this.obstaculo.get_pos_x();
+  }
+
+
+  // ---------- Función get_pos_y ----------
+  // Llama a la función get_pos_y de Objeto.js
+
+  get_pos_y(){
+    return this.obstaculo.get_pos_y();
   }
 
 

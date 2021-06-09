@@ -7,7 +7,7 @@ import { TextureAnimator } from './michis-lib.js'
 const FINAL_CAMINO_H = 25;
 const carril1 = {x:25, y:3, z:0.6, s:1, i:1};
 const carril2 = {x:25, y:1.35, z:0.8, s:1.75, i:2};
-const carril3 = {x:25, y:-0.9, z:1, s:2.5, i:3};
+const carril3 = {x:25, y:-1.1, z:1, s:2.5, i:3};
  
 class Gato extends THREE.Object3D {
   constructor(who) {
@@ -94,8 +94,8 @@ class Gato extends THREE.Object3D {
   // Inicializa la habilidad
 
   lanzar_habilidad(carril) {
-    var pos_actual = { x: 0, y: this.gato.position.y, z: this.gato.position.z,
-      s: this.gato.scale.x };
+    var pos_actual = { x: 0, y: this.where.y, z: this.where.z,
+      s: this.where.s };
     this.hab.activate(pos_actual);
     this.habilidad = true;
   }
@@ -270,22 +270,6 @@ class Gato extends THREE.Object3D {
     this.habilidad = valor;
     this.hab.set_visible(valor);
 
-  }
-
-
-  // ---------- Función iddle ----------
-
-  iddle() {
-    this.label = 'iddle';
-  }
-
-
-  // ---------- Función set_habilidad ----------
-  // Desactiva o activa la habilidad
-
-  set_habilidad(valor) {
-    this.habilidad = valor;
-    this.hab.set_visible(valor);
   }
 
   // ---------- Función get_habilidad ----------

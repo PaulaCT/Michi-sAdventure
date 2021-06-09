@@ -75,16 +75,15 @@ class ControladorObstaculo extends THREE.Object3D {
 
 
   // ---------- Función update ----------
-  // Recibe un booleano que indique si son las 3 am y el gato
+  // Recibe el gato
   // También recibe las vidas restantes
 
-  update(am, gato, vidas, delta){  
+  update(gato, vidas, delta){  
 
     // Iremos lanzando obstáculos cada segundo
     var time = Date.now();
     var segundos = -(this.inicio_movimiento - time) / 1000;
     var frecuencia = 1;
-    if (am) frecuencia = 2.25;
 
     // Las vamos activando
     if (!this.primera && segundos > 1/frecuencia){
@@ -122,6 +121,34 @@ class ControladorObstaculo extends THREE.Object3D {
     }
 
     // Aquí se gestiona la colisión
+    // Primero con la habilidad
+    if (gato.get_habilidad()) {
+      var habilidad = gato.get_hab();
+      if (habilidad.get_pos_y() == this.obstaculo1.get_pos_y() && habilidad.get_pos_x() <= this.obstaculo1.get_pos_x()) {
+        // Si colisiona con la habilidad
+        if (this.obstaculo1.colision_hab(habilidad)) { 
+          gato.set_habilidad(false);
+          this.obstaculo1.explosion = true;
+        }
+      } else if (habilidad.get_pos_y() == this.obstaculo2.get_pos_y() && habilidad.get_pos_x() <= this.obstaculo2.get_pos_x()) {
+        if (this.obstaculo2.colision_hab(habilidad)) { 
+          gato.set_habilidad(false);
+          this.obstaculo2.explosion = true;
+        }
+      } else if (habilidad.get_pos_y() == this.obstaculo3.get_pos_y() && habilidad.get_pos_x() <= this.obstaculo3.get_pos_x()) {
+        if (this.obstaculo3.colision_hab(habilidad)) { 
+          gato.set_habilidad(false);
+          this.obstaculo2.explosion = true;
+        }
+      } else if (this.patron % 2 == 0 && habilidad.get_pos_y() == this.obstaculo4.get_pos_y() && habilidad.get_pos_x() <= this.obstaculo4.get_pos_x()) {
+        if (this.obstaculo4.colision_hab(habilidad)) { 
+          gato.set_habilidad(false);
+          this.obstaculo4.explosion = true;
+        }
+      }
+    }
+
+    // Luego con el gato
     // Se comprueba el primer obstáculo que aún no haya llegado al gato
     // Si se ha producido colisión, ocultamos el obstáculo y lo contamos
     if (this.obstaculo1.get_visible() && this.obstaculo1.get_pos_x() >=  POS_GATO && !this.obstaculo1.explosion) {
@@ -147,14 +174,14 @@ class ControladorObstaculo extends THREE.Object3D {
     }
 
     // Ahora llamamos a sus respectivos métodos update
-    this.obstaculo1.update(this.primera, am, delta);
-    this.obstaculo2.update(this.segunda, am, delta);
+    this.obstaculo1.update(this.primera, delta);
+    this.obstaculo2.update(this.segunda, delta);
     if (this.patron % 2 == 0) {
-      this.obstaculo3.update(this.tercera, am, delta);
-      this.obstaculo4.update(this.cuarta, am, delta);
+      this.obstaculo3.update(this.tercera, delta);
+      this.obstaculo4.update(this.cuarta, delta);
 
     // Utilizamos el booleano del cuarto objeto para el tercero
-    } else this.obstaculo3.update(this.cuarta, am, delta);
+    } else this.obstaculo3.update(this.cuarta, delta);
 
     // Detenemos a los obstaculos que han llegado al final del camino
     if (this.obstaculo1.get_pos_x() <= FINAL_CAMINO) this.obstaculo1.set_visible(false);

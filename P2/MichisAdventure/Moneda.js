@@ -38,32 +38,30 @@ class Moneda extends THREE.Object3D {
   // ---------- Función update ----------
   // Recibe:
   //    un booleano que indique si la moneda se ha de desplazar
-  //    un booleano que indique si son las 3am
   // Controla el movimiento de botar y llama al método update de Objeto.js
 
-  update(mover, am, delta){    
+  update(mover, delta){    
     if (!this.invisible){
         if (mover) {
 
             // Movimiento: girar
             this.annie.animacion(0, 6, delta * 1000);
+          
             // Movimiento: botar
-
-            /*
             if (this.arriba){
                 if (this.pos_y > -0.1){
-                    this.pos_y = this.pos_y - 0.025;
+                    this.pos_y = this.pos_y - 0.25 * delta;
                 } else this.arriba = false;
             } else {
                 if (this.pos_y < 0.15){
-                    this.pos_y = this.pos_y + 0.025;
+                    this.pos_y = this.pos_y + 0.25 * delta;
                 } else this.arriba = true;
             }
             this.position.y = this.pos_y;
-            */
+            
 
             // Llamamos al update de Objeto.js
-            this.moneda.update(am, delta);  
+            this.moneda.update(delta);  
         } 
     } 
   }
